@@ -1,7 +1,7 @@
 package main
 
 // just a scratch
-// go run main.go
+// go run pokemon.go
 
 import (
 	"encoding/json"
@@ -14,6 +14,7 @@ import (
 // A Response struct to map the Entire Response
 type Response struct {
 	Name    string    `json:"name"`
+	MainSeries bool   `json:"is_main_series"`
 	Pokemon []Pokemon `json:"pokemon_entries"`
 }
 
@@ -45,6 +46,7 @@ func pokemon() {
 
 	fmt.Println(responseObject.Name)
 	fmt.Println(len(responseObject.Pokemon))
+	fmt.Println(responseObject.MainSeries)
 }
 
 func main() {

@@ -27,146 +27,83 @@ func requestWrapper(url string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func geminiBTC(url string) (structs.GenericCryptoResponse, error) {
+func geminiBTC(url string) (structs.GeminiTickerBTC, error) {
 	var responseObject structs.GeminiTickerBTC
-	var object structs.GenericCryptoResponse
 	// also the same for https://api.gemini.com/v1/pubticker/ethusd
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
 	err = json.Unmarshal(responseData, &responseObject)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
-	object.Volume = responseObject.Volume
-	object.Ask = responseObject.Ask
-	object.Bid = responseObject.Bid
-	object.High = responseObject.High
-	object.Low = responseObject.Low
-	object.Last = responseObject.Last
-
-	return object, nil
+	return responseObject, nil
 }
 
-func geminiETH(url string) (structs.GenericCryptoResponse, error) {
+func geminiETH(url string) (structs.GeminiTickerETH, error) {
 	var responseObject structs.GeminiTickerETH
-	var object structs.GenericCryptoResponse
 	// also the same for https://api.gemini.com/v1/pubticker/ethusd
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
 	err = json.Unmarshal(responseData, &responseObject)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
-	object.Volume = responseObject.Volume
-	object.Ask = responseObject.Ask
-	object.Bid = responseObject.Bid
-	object.High = responseObject.High
-	object.Low = responseObject.Low
-	object.Last = responseObject.Last
-
-	return object, nil
+	return responseObject, nil
 }
 
-func IndepentReserve(url string) (structs.GenericCryptoResponse, error) {
+func IndepentReserve(url string) (structs.IndepentReserve, error) {
 	var responseObject structs.IndepentReserve
-	var object structs.GenericCryptoResponse
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
 	err = json.Unmarshal(responseData, &responseObject)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
-	object.Volume = responseObject.Volume
-	object.Ask = responseObject.Ask
-	object.Bid = responseObject.Bid
-	object.High = responseObject.High
-	object.Low = responseObject.Low
-	object.Last = responseObject.Last
-
-	return object, nil
+	return responseObject, nil
 }
 
-func coinfloorAndBitstamp(url string) (structs.GenericCryptoResponse, error) {
+func coinfloorAndBitstamp(url string) (structs.CoinfloorTickerAndBitstamp, error) {
 	var responseObject structs.CoinfloorTickerAndBitstamp
-	var object structs.GenericCryptoResponse
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
 	err = json.Unmarshal(responseData, &responseObject)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
-	object.Volume = responseObject.Volume
-	object.Ask = responseObject.Ask
-	object.Bid = responseObject.Bid
-	object.High = responseObject.High
-	object.Low = responseObject.Low
-	object.Last = responseObject.Last
-
-	return object, nil
+	return responseObject, nil
 }
 
-func BTCMarket(url string) (structs.GenericCryptoResponse, error) {
+func BTCMarket(url string) (structs.BTCMarket, error) {
 	var responseObject structs.BTCMarket
-	var object structs.GenericCryptoResponse
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 	//var A structs.CryptoExchange
 
 
 	err = json.Unmarshal(responseData, &responseObject)
 	if err != nil {
-		return object, err
+		return responseObject, err
 	}
 
-	object.Volume = responseObject.Volume
-	object.Ask = responseObject.Ask
-	object.Bid = responseObject.Bid
-	object.High = responseObject.High
-	object.Low = responseObject.Low
-	object.Last = responseObject.Last
-
-	return object, nil
-}
-
-func genericCryptoExchange(url string) (structs.GenericCryptoResponse, error) {
-	var responseObject structs.BTCMarket
-	var object structs.GenericCryptoResponse
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return object, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return object, err
-	}
-
-	object.Volume = responseObject.Volume
-	object.Ask = responseObject.Ask
-	object.Bid = responseObject.Bid
-	object.High = responseObject.High
-	object.Low = responseObject.Low
-	object.Last = responseObject.Last
-
-	return object, nil
+	return responseObject, nil
 }
 
 
@@ -180,7 +117,6 @@ func currencyExchangeRates() (map[string]decimal.Decimal, error) {
 
 	resp, err := http.Get("https://api.exchangeratesapi.io/latest?base=USD")
 	// same for https://api.gemini.com/v1/pubticker/ethusd
-	// should use panic... and defer recover to deal with it; in the future...
 	if err != nil {
 		// should wrap error
 		return nil, err
@@ -208,7 +144,7 @@ type Pair struct {
 
 type CryptoDTO struct {
 	name string
-	coin structs.GenericCryptoResponse
+	coin structs.CryptoExchange
 	error error
 }
 
@@ -271,8 +207,6 @@ func main() {
 		val , err := BTCMarket(v.url)
 		groupListBTCMarket = append(groupListBTCMarket, CryptoDTO{v.name,val, err})
 	}
-
-	// create a list
 
 	/*btc, err := coinfloorAndBitstamp("https://webapi.coinfloor.co.uk:8090/bist/XBT/GBP/ticker/")
 	eth, err := coinfloorAndBitstamp("https://webapi.coinfloor.co.uk:8090/bist/ETH/GBP/ticker/")

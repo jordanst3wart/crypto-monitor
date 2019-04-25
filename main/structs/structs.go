@@ -55,6 +55,19 @@ type ETHVolume struct {
 	Timestamp int      `json:"timestamp"`
 }
 
+type ACXTicker struct {
+	ACXNested `json:"ticker"`
+}
+
+type ACXNested struct {
+	Bid string            `json:"buy"`
+	Ask string            `json:"sell"`
+	Volume string	      `json:"vol"`
+	Last string           `json:"last"`
+	High   string         `json:"high"`
+	Low    string         `json:"low"`
+}
+
 type CoinfloorTickerAndBitstamp struct {
 	Last   string   `json:"last"`
 	High   string   `json:"high"`
@@ -209,6 +222,30 @@ func (b CoinfloorTickerAndBitstamp) low() string {
 }
 
 func (b CoinfloorTickerAndBitstamp) last() string {
+	return b.Last
+}
+
+func (b ACXTicker) volume() string {
+	return b.Volume
+}
+
+func (b ACXTicker) ask() string {
+	return b.Ask
+}
+
+func (b ACXTicker) bid() string {
+	return b.Bid
+}
+
+func (b ACXTicker) high() string {
+	return b.High
+}
+
+func (b ACXTicker) low() string {
+	return b.Low
+}
+
+func (b ACXTicker) last() string {
 	return b.Last
 }
 

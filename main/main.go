@@ -7,10 +7,12 @@ package main
 import (
 	"./structs"
 	"encoding/json"
+	"fmt"
 	"github.com/shopspring/decimal"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 
@@ -119,6 +121,21 @@ func ACX(url string) (structs.ACXTicker, error) {
 	return responseObject, nil
 }
 
+func Coinjar(url string) (structs.Coinjar, error) {
+	var responseObject structs.Coinjar
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return responseObject, err
+	}
+
+	err = json.Unmarshal(responseData, &responseObject)
+	if err != nil {
+		return responseObject, err
+	}
+
+	return responseObject, nil
+}
+
 /*func cryptoCurrencies() (map[string]int, error) {
 	exchangeMap := make(map[string]map[string]int) // map[string]int or error ??
 	gemini()
@@ -161,6 +178,7 @@ type CryptoDTO struct {
 }
 
 func main() {
+	start := time.Now()
 	DEBUG := false
 	//val1, err1 := cryptoCurrencies()
 	val, err := currencyExchangeRates()
@@ -191,28 +209,27 @@ func main() {
 	}
 
 	urlList2 := []Pair{
-		{"IndependentReserve_AUS_BTC", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud"},
-		{"IndependentReserve_AUS_ETH","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=eth&secondaryCurrencyCode=aud"},
-		{"IndependentReserve_AUS_BCH","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=bch&secondaryCurrencyCode=aud"},
-		{"IndependentReserve_AUS_XRP","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xrp&secondaryCurrencyCode=aud"},
-		{"IndependentReserve_AUS_LTC","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=ltc&secondaryCurrencyCode=aud"}}
+		{"IndependentReserve_AUD_BTC", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud"},
+		{"IndependentReserve_AUD_ETH","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=eth&secondaryCurrencyCode=aud"},
+		{"IndependentReserve_AUD_BCH","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=bch&secondaryCurrencyCode=aud"},
+		{"IndependentReserve_AUD_XRP","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xrp&secondaryCurrencyCode=aud"},
+		{"IndependentReserve_AUD_LTC","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=ltc&secondaryCurrencyCode=aud"}}
 	for _, v := range urlList2 {
-		val , err := IndepentReserve(v.url)
+		val, err := IndepentReserve(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 
 	btc, err1 := geminiBTC("https://api.gemini.com/v1/pubticker/btcusd")
 	eth, err2 := geminiETH("https://api.gemini.com/v1/pubticker/ethusd")
-	groupListGemini := []CryptoDTO{}
-	groupListGemini = append(groupListGemini, CryptoDTO{"GEMINI_USD_BTC", btc,err1})
-	groupListGemini = append(groupListGemini, CryptoDTO{"GEMINI_USD_ETH", eth,err2})
+	groupList = append(groupList, CryptoDTO{"GEMINI_USD_BTC", btc,err1})
+	groupList = append(groupList, CryptoDTO{"GEMINI_USD_ETH", eth,err2})
 
 	urlList3 := []Pair{
-		{"BTCMarket_AUS_BTC", "https://api.btcmarkets.net/market/BTC/AUD/tick"},
-		{"BTCMarket_AUS_ETH", "https://api.btcmarkets.net/market/ETH/AUD/tick"},
-		{"BTCMarket_AUS_BCH","https://api.btcmarkets.net/market/BCHABC/AUD/tick"},
-		{"BTCMarket_AUS_XRP", "https://api.btcmarkets.net/market/XRP/AUD/tick"},
-		{"BTCMarket_AUS_LTC","https://api.btcmarkets.net/market/LTC/AUD/tick"}}
+		{"BTCMarket_AUD_BTC", "https://api.btcmarkets.net/market/BTC/AUD/tick"},
+		{"BTCMarket_AUD_ETH", "https://api.btcmarkets.net/market/ETH/AUD/tick"},
+		{"BTCMarket_AUD_BCH","https://api.btcmarkets.net/market/BCHABC/AUD/tick"},
+		{"BTCMarket_AUD_XRP", "https://api.btcmarkets.net/market/XRP/AUD/tick"},
+		{"BTCMarket_AUD_LTC","https://api.btcmarkets.net/market/LTC/AUD/tick"}}
 	for _, v := range urlList3 {
 		val , err := BTCMarket(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
@@ -220,27 +237,40 @@ func main() {
 
 
 	urlList4 := []Pair{
-		{"ACX_AUS_BTC", "https://acx.io:443/api/v2/tickers/btcaud.json"},
-		{"ACX_AUS_ETH", "https://acx.io:443/api/v2/tickers/ethaud.json"},
-		{"ACX_AUS_BCH","https://acx.io:443/api/v2/tickers/bchaud.json"},
-		{"ACX_AUS_XRP", "https://acx.io:443/api/v2/tickers/ltcaud.json"},
-		{"ACX_AUS_LTC","https://acx.io:443/api/v2/tickers/xrpaud.json"}}
+		{"ACX_AUD_BTC", "https://acx.io:443/api/v2/tickers/btcaud.json"},
+		{"ACX_AUD_ETH", "https://acx.io:443/api/v2/tickers/ethaud.json"},
+		{"ACX_AUD_BCH","https://acx.io:443/api/v2/tickers/bchaud.json"},
+		{"ACX_AUD_XRP", "https://acx.io:443/api/v2/tickers/ltcaud.json"},
+		{"ACX_AUD_LTC","https://acx.io:443/api/v2/tickers/xrpaud.json"}}
 	for _, v := range urlList4 {
 		val , err := ACX(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
-	/*btc, err := coinfloorAndBitstamp("https://webapi.coinfloor.co.uk:8090/bist/XBT/GBP/ticker/")
-	eth, err := coinfloorAndBitstamp("https://webapi.coinfloor.co.uk:8090/bist/ETH/GBP/ticker/")
-	bch, err := coinfloorAndBitstamp("https://webapi.coinfloor.co.uk:8090/bist/BCH/GBP/ticker/")
-	bch2, err := coinfloorAndBitstamp("https://www.bitstamp.net/api/v2/ticker/btcusd/")
-*/
 
+	urlList5 := []Pair{
+		{"Coinjar_AUD_BTC", "https://data.exchange.coinjar.com/products/BTCAUD/ticker"},
+		{"Coinjar_AUD_ETH", "https://data.exchange.coinjar.com/products/ETHAUD/ticker"},
+		{"Coinjar_AUD_XRP","https://data.exchange.coinjar.com/products/XRPAUD/ticker"},
+		{"Coinjar_AUD_LTC", "https://data.exchange.coinjar.com/products/LTCAUD/ticker"}}
+	for _, v := range urlList5 {
+		val , err := Coinjar(v.url)
+		groupList = append(groupList, CryptoDTO{v.name,val, err})
+	}
+
+	// check for errors
+	for _, v := range groupList {
+		if v.error != nil {
+			log.Println(v.error.Error())
+		}
+	}
 	//log.Println(btc)
 	//log.Println(eth)
 	if DEBUG {
 		log.Println("got values from Crypto exchange")
 		log.Println(groupList)
 	}
+	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
+	// 14.40s elapsed before async
 
 
 

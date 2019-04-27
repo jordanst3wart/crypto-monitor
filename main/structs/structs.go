@@ -1,6 +1,10 @@
 package structs
 
-import "github.com/shopspring/decimal"
+import (
+	"github.com/shopspring/decimal" // could probably just use float64
+	"strconv"
+	)
+
 
 // todo write interface to be used
 
@@ -88,69 +92,79 @@ type GenericCryptoResponse struct {
 }
 
 type IndepentReserve struct {
-	Last   string   `json:"LastPrice"`
-	High   string   `json:"DayHighestPrice"`
-	Low    string   `json:"DayLowestPrice"`
-	Volume string   `json:"DayVolumeXbt"`
-	Bid    string   `json:"CurrentHighestBidPrice"`
-	Ask    string   `json:"CurrentLowestOfferPrice"`
+	Last   float64   `json:"LastPrice"`
+	High   float64   `json:"DayHighestPrice"`
+	Low    float64   `json:"DayLowestPrice"`
+	Volume float64   `json:"DayVolumeXbt"`
+	Bid    float64   `json:"CurrentHighestBidPrice"`
+	Ask    float64   `json:"CurrentLowestOfferPrice"`
 }
 
 type BTCMarket struct {
-	Last   string    `json:"lastPrice"`
-	High   string    `json:"-"`
-	Low    string    `json:"-"`
-	Volume string    `json:"volume24h"`
-	Bid    string    `json:"bestBid"`
-	Ask    string    `json:"bestAsk"`
+	Last   float64   `json:"lastPrice"`
+	High   float64   `json:"-"`
+	Low    float64   `json:"-"`
+	Volume float64   `json:"volume24h"`
+	Bid    float64   `json:"bestBid"`
+	Ask    float64   `json:"bestAsk"`
 }
 
+type Coinjar struct {
+	Last   string    `json:"last"`
+	High   string    `json:"-"`
+	Low    string    `json:"-"`
+	Volume string    `json:"volume_24h"`
+	Bid    string    `json:"bid"`
+	Ask    string    `json:"ask"`
+}
+
+
 func (b BTCMarket) volume() string {
-	return b.Volume
+	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
 }
 
 func (b BTCMarket) ask() string {
-	return b.Ask
+	return strconv.FormatFloat(b.Ask, 'f', -1, 64)
 }
 
 func (b BTCMarket) bid() string {
-	return b.Bid
+	return strconv.FormatFloat(b.Bid, 'f', -1, 64)
 }
 
 func (b BTCMarket) high() string {
-	return b.High
+	return strconv.FormatFloat(b.High, 'f', -1, 64)
 }
 
 func (b BTCMarket) low() string {
-	return b.Low
+	return strconv.FormatFloat(b.Low, 'f', -1, 64)
 }
 
 func (b BTCMarket) last() string {
-	return b.Last
+	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
 func (b IndepentReserve) volume() string {
-	return b.Volume
+	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
 }
 
 func (b IndepentReserve) ask() string {
-	return b.Ask
+	return strconv.FormatFloat(b.Ask, 'f', -1, 64)
 }
 
 func (b IndepentReserve) bid() string {
-	return b.Bid
+	return strconv.FormatFloat(b.Bid, 'f', -1, 64)
 }
 
 func (b IndepentReserve) high() string {
-	return b.High
+	return strconv.FormatFloat(b.High, 'f', -1, 64)
 }
 
 func (b IndepentReserve) low() string {
-	return b.Low
+	return strconv.FormatFloat(b.Low, 'f', -1, 64)
 }
 
 func (b IndepentReserve) last() string {
-	return b.Last
+	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
 func (b GeminiTickerETH) volume() string {
@@ -246,6 +260,30 @@ func (b ACXTicker) low() string {
 }
 
 func (b ACXTicker) last() string {
+	return b.Last
+}
+
+func (b Coinjar) volume() string {
+	return b.Volume
+}
+
+func (b Coinjar) ask() string {
+	return b.Ask
+}
+
+func (b Coinjar) bid() string {
+	return b.Bid
+}
+
+func (b Coinjar) high() string {
+	return b.High
+}
+
+func (b Coinjar) low() string {
+	return b.Low
+}
+
+func (b Coinjar) last() string {
 	return b.Last
 }
 

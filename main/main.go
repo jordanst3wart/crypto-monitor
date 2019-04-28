@@ -1,11 +1,7 @@
 package main
 
 
-// just a scratch
 // go run pokemon.go
-
-// implement unmarshal
-// https://stackoverflow.com/questions/44380095/polymorphic-json-unmarshalling-of-embedded-structs
 
 import (
 	"./structs"
@@ -64,18 +60,6 @@ func geminiETH(url string) (structs.GeminiTickerETH, error) {
 	return responseObject, nil
 }
 
-//type foo struct{
-//}
-
-/*func bar(baz interface{}) {
-	f, ok := baz.(*foo)
-	if !ok {
-		// baz was not of type *foo. The assertion failed
-	}
-
-	// f is of type *foo
-}*/
-
 func IndepentReserve(url string) (structs.IndepentReserve, error) {
 	var responseObject structs.IndepentReserve
 	responseData, err := requestWrapper(url)
@@ -88,30 +72,8 @@ func IndepentReserve(url string) (structs.IndepentReserve, error) {
 		return responseObject, err
 	}
 
-	//f := &structs.IndepentReserve{}
-
-	//bar(f)
-	//foo2 := &structs.IndepentReserve{}
-	//IndepentReserve2("foo", foo2)
-
 	return responseObject, nil
 }
-
-/*func UnmarshalToStruct(url string, exchange structs.CryptoExchange) error {
-	//var coin structs.CryptoExchange
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(responseData, &exchange)
-	if err != nil {
-		return err
-	}
-	log.Println(exchange)
-
-	return nil
-}*/
 
 func coinfloorAndBitstamp(url string) (structs.CoinfloorTickerAndBitstamp, error) {
 	var responseObject structs.CoinfloorTickerAndBitstamp
@@ -173,11 +135,6 @@ func Coinjar(url string) (structs.Coinjar, error) {
 	return responseObject, nil
 }
 
-/*func cryptoCurrencies() (map[string]int, error) {
-	exchangeMap := make(map[string]map[string]int) // map[string]int or error ??
-	gemini()
-}*/
-
 func currencyExchangeRates() (map[string]decimal.Decimal, error) {
 	exchangeMap := make(map[string]decimal.Decimal)
 
@@ -223,16 +180,6 @@ func main() {
 	}
 
 	log.Println(blah)
-
-	//CryptoExchange
-	//err := UnmarshalToStruct("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", responseObject2) // (interface{}, error) {
-	//var foo := CryptoDTO{"hi",*foo2, err}
-
-	//foo4, err3 := something2("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", responseObject2)
-	/*if err != nil {
-		log.Fatal(err.Error())
-	}*/
-	log.Println(responseObject2)
 
 	DEBUG := false
 	//val1, err1 := cryptoCurrencies()

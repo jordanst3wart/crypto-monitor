@@ -172,20 +172,21 @@ type CryptoDTO struct {
 
 func main() {
 	start := time.Now()
+	//////
 	var responseObject2 structs.IndepentReserve
 
 	blah, err1 := responseObject2.RequestUpdate("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud")
 	if err1 != nil {
 		log.Println("rarr")
 	}
-
 	log.Println(blah)
+	///////
 
 	DEBUG := false
 	//val1, err1 := cryptoCurrencies()
 	val, err := currencyExchangeRates()
 	groupList := []CryptoDTO{}
-	ch := make(chan CryptoDTO)
+	// ch := make(chan CryptoDTO)
 	// log error at main level
 	if err != nil {
 		// possibly send email
@@ -210,7 +211,7 @@ func main() {
 
 	for _, v := range urlList {
 		val , err := coinfloorAndBitstamp(v.url)
-		ch <- CryptoDTO{v.name,val, err}
+		// ch <- CryptoDTO{v.name,val, err}
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 

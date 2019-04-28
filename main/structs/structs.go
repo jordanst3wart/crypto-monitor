@@ -8,9 +8,6 @@ import (
 	"strconv"
 )
 
-
-// todo write interface to be used
-
 /*
 	bid_aud
 	offer_aud

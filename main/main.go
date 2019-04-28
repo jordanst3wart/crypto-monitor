@@ -4,6 +4,9 @@ package main
 // just a scratch
 // go run pokemon.go
 
+// implement unmarshal
+// https://stackoverflow.com/questions/44380095/polymorphic-json-unmarshalling-of-embedded-structs
+
 import (
 	"./structs"
 	"encoding/json"
@@ -61,6 +64,18 @@ func geminiETH(url string) (structs.GeminiTickerETH, error) {
 	return responseObject, nil
 }
 
+//type foo struct{
+//}
+
+/*func bar(baz interface{}) {
+	f, ok := baz.(*foo)
+	if !ok {
+		// baz was not of type *foo. The assertion failed
+	}
+
+	// f is of type *foo
+}*/
+
 func IndepentReserve(url string) (structs.IndepentReserve, error) {
 	var responseObject structs.IndepentReserve
 	responseData, err := requestWrapper(url)
@@ -73,7 +88,29 @@ func IndepentReserve(url string) (structs.IndepentReserve, error) {
 		return responseObject, err
 	}
 
+	//f := &structs.IndepentReserve{}
+
+	//bar(f)
+	//foo2 := &structs.IndepentReserve{}
+	//IndepentReserve2("foo", foo2)
+
 	return responseObject, nil
+}
+
+func UnmarshalToStruct(url string, exchange structs.CryptoExchange) error {
+	//var coin structs.CryptoExchange
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(responseData, &exchange)
+	if err != nil {
+		return err
+	}
+	log.Println(exchange)
+
+	return nil
 }
 
 func coinfloorAndBitstamp(url string) (structs.CoinfloorTickerAndBitstamp, error) {
@@ -165,8 +202,6 @@ func currencyExchangeRates() (map[string]decimal.Decimal, error) {
 	return exchangeMap, err
 }
 
-// https://api.exchangeratesapi.io/latest?base=USD
-
 type Pair struct {
 	name, url string
 }
@@ -177,12 +212,31 @@ type CryptoDTO struct {
 	error error
 }
 
+
 func main() {
 	start := time.Now()
+	var responseObject2 structs.IndepentReserve
+
+	//blah, err1 := responseObject2.RequestUpdate("foo")
+	//if err1 != nil {
+	//	log.Println("rarr")
+	//}
+
+	//CryptoExchange
+	err := UnmarshalToStruct("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", responseObject2) // (interface{}, error) {
+	//var foo := CryptoDTO{"hi",*foo2, err}
+
+	//foo4, err3 := something2("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", responseObject2)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Println(responseObject2)
+
 	DEBUG := false
 	//val1, err1 := cryptoCurrencies()
 	val, err := currencyExchangeRates()
 	groupList := []CryptoDTO{}
+	ch := make(chan CryptoDTO)
 	// log error at main level
 	if err != nil {
 		// possibly send email
@@ -203,8 +257,11 @@ func main() {
 		{"Bitstamp_USD_LTC","https://www.bitstamp.net/api/v2/ticker/ltcusd/"},
 		{"Bitstamp_USD_ETH","https://www.bitstamp.net/api/v2/ticker/ethusd/"},
 		{"Bitstamp_USD_BCH","https://www.bitstamp.net/api/v2/ticker/bchusd/"}}
+
+
 	for _, v := range urlList {
 		val , err := coinfloorAndBitstamp(v.url)
+		ch <- CryptoDTO{v.name,val, err}
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 
@@ -231,6 +288,7 @@ func main() {
 		{"BTCMarket_AUD_XRP", "https://api.btcmarkets.net/market/XRP/AUD/tick"},
 		{"BTCMarket_AUD_LTC","https://api.btcmarkets.net/market/LTC/AUD/tick"}}
 	for _, v := range urlList3 {
+		// go routine goes here
 		val , err := BTCMarket(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}

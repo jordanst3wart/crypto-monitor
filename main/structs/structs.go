@@ -1,9 +1,12 @@
 package structs
 
 import (
+	"encoding/json"
 	"github.com/shopspring/decimal" // could probably just use float64
+	"io/ioutil"
+	"net/http"
 	"strconv"
-	)
+)
 
 
 // todo write interface to be used
@@ -13,6 +16,8 @@ import (
 	offer_aud
 */
 
+// the `json:""` are called struct tags
+// by default the json is parsed input the matching key
 // currency struct
 type CurrencyExchangeAPI struct {
 	Base string            `json:"base"`
@@ -82,15 +87,6 @@ type CoinfloorTickerAndBitstamp struct {
 	Vwap   string   `json:"vwap"`
 }
 
-type GenericCryptoResponse struct {
-	Last   string
-	High   string
-	Low    string
-	Volume string
-	Bid    string
-	Ask    string
-}
-
 type IndepentReserve struct {
 	Last   float64   `json:"LastPrice"`
 	High   float64   `json:"DayHighestPrice"`
@@ -143,6 +139,45 @@ func (b BTCMarket) last() string {
 	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
+
+func requestWrapper(url string) ([]byte, error) {
+	var responseData []byte
+	resp, err := http.Get(url)
+	if err != nil {
+		return responseData, err
+	}
+
+	return ioutil.ReadAll(resp.Body)
+}
+
+func (b BTCMarket) requestUpdate(url string) (CryptoExchange, error) {
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return b, err
+	}
+
+	err = json.Unmarshal(responseData, &b)
+	if err != nil {
+		return b, err
+	}
+
+	return b, nil
+}
+
+func (b IndepentReserve) requestUpdate(url string) (CryptoExchange, error) {
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return b, err
+	}
+
+	err = json.Unmarshal(responseData, &b)
+	if err != nil {
+		return b, err
+	}
+
+	return b, nil
+}
+
 func (b IndepentReserve) volume() string {
 	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
 }
@@ -165,6 +200,20 @@ func (b IndepentReserve) low() string {
 
 func (b IndepentReserve) last() string {
 	return strconv.FormatFloat(b.Last, 'f', -1, 64)
+}
+
+func (b GeminiTickerETH) requestUpdate(url string) (CryptoExchange, error) {
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return b, err
+	}
+
+	err = json.Unmarshal(responseData, &b)
+	if err != nil {
+		return b, err
+	}
+
+	return b, nil
 }
 
 func (b GeminiTickerETH) volume() string {
@@ -191,6 +240,20 @@ func (b GeminiTickerETH) last() string {
 	return b.Last
 }
 
+func (b GeminiTickerBTC) requestUpdate(url string) (CryptoExchange, error) {
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return b, err
+	}
+
+	err = json.Unmarshal(responseData, &b)
+	if err != nil {
+		return b, err
+	}
+
+	return b, nil
+}
+
 func (b GeminiTickerBTC) volume() string {
 	return b.Volume
 }
@@ -213,6 +276,20 @@ func (b GeminiTickerBTC) low() string {
 
 func (b GeminiTickerBTC) last() string {
 	return b.Last
+}
+
+func (b CoinfloorTickerAndBitstamp) requestUpdate(url string) (CryptoExchange, error) {
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return b, err
+	}
+
+	err = json.Unmarshal(responseData, &b)
+	if err != nil {
+		return b, err
+	}
+
+	return b, nil
 }
 
 func (b CoinfloorTickerAndBitstamp) volume() string {
@@ -239,6 +316,20 @@ func (b CoinfloorTickerAndBitstamp) last() string {
 	return b.Last
 }
 
+func (b ACXTicker) requestUpdate(url string) (CryptoExchange, error) {
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return b, err
+	}
+
+	err = json.Unmarshal(responseData, &b)
+	if err != nil {
+		return b, err
+	}
+
+	return b, nil
+}
+
 func (b ACXTicker) volume() string {
 	return b.Volume
 }
@@ -261,6 +352,20 @@ func (b ACXTicker) low() string {
 
 func (b ACXTicker) last() string {
 	return b.Last
+}
+
+func (b Coinjar) requestUpdate(url string) (CryptoExchange, error) {
+	responseData, err := requestWrapper(url)
+	if err != nil {
+		return b, err
+	}
+
+	err = json.Unmarshal(responseData, &b)
+	if err != nil {
+		return b, err
+	}
+
+	return b, nil
 }
 
 func (b Coinjar) volume() string {
@@ -294,4 +399,5 @@ type CryptoExchange interface {
 	high() string
 	low() string
 	last() string
+	requestUpdate(url string) (CryptoExchange, error)
 }

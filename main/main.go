@@ -97,7 +97,7 @@ func IndepentReserve(url string) (structs.IndepentReserve, error) {
 	return responseObject, nil
 }
 
-func UnmarshalToStruct(url string, exchange structs.CryptoExchange) error {
+/*func UnmarshalToStruct(url string, exchange structs.CryptoExchange) error {
 	//var coin structs.CryptoExchange
 	responseData, err := requestWrapper(url)
 	if err != nil {
@@ -111,7 +111,7 @@ func UnmarshalToStruct(url string, exchange structs.CryptoExchange) error {
 	log.Println(exchange)
 
 	return nil
-}
+}*/
 
 func coinfloorAndBitstamp(url string) (structs.CoinfloorTickerAndBitstamp, error) {
 	var responseObject structs.CoinfloorTickerAndBitstamp
@@ -217,19 +217,21 @@ func main() {
 	start := time.Now()
 	var responseObject2 structs.IndepentReserve
 
-	//blah, err1 := responseObject2.RequestUpdate("foo")
-	//if err1 != nil {
-	//	log.Println("rarr")
-	//}
+	blah, err1 := responseObject2.RequestUpdate("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud")
+	if err1 != nil {
+		log.Println("rarr")
+	}
+
+	log.Println(blah)
 
 	//CryptoExchange
-	err := UnmarshalToStruct("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", responseObject2) // (interface{}, error) {
+	//err := UnmarshalToStruct("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", responseObject2) // (interface{}, error) {
 	//var foo := CryptoDTO{"hi",*foo2, err}
 
 	//foo4, err3 := something2("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", responseObject2)
-	if err != nil {
+	/*if err != nil {
 		log.Fatal(err.Error())
-	}
+	}*/
 	log.Println(responseObject2)
 
 	DEBUG := false

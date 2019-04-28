@@ -150,7 +150,7 @@ func requestWrapper(url string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (b BTCMarket) requestUpdate(url string) (CryptoExchange, error) {
+func (b BTCMarket) RequestUpdate(url string) (CryptoExchange, error) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		return b, err
@@ -164,7 +164,7 @@ func (b BTCMarket) requestUpdate(url string) (CryptoExchange, error) {
 	return b, nil
 }
 
-func (b IndepentReserve) requestUpdate(url string) (CryptoExchange, error) {
+func (b IndepentReserve) RequestUpdate(url string) (CryptoExchange, error) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		return b, err
@@ -202,7 +202,7 @@ func (b IndepentReserve) last() string {
 	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
-func (b GeminiTickerETH) requestUpdate(url string) (CryptoExchange, error) {
+func (b GeminiTickerETH) RequestUpdate(url string) (CryptoExchange, error) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		return b, err
@@ -240,7 +240,7 @@ func (b GeminiTickerETH) last() string {
 	return b.Last
 }
 
-func (b GeminiTickerBTC) requestUpdate(url string) (CryptoExchange, error) {
+func (b GeminiTickerBTC) RequestUpdate(url string) (CryptoExchange, error) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		return b, err
@@ -278,7 +278,7 @@ func (b GeminiTickerBTC) last() string {
 	return b.Last
 }
 
-func (b CoinfloorTickerAndBitstamp) requestUpdate(url string) (CryptoExchange, error) {
+func (b CoinfloorTickerAndBitstamp) RequestUpdate(url string) (CryptoExchange, error) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		return b, err
@@ -316,7 +316,7 @@ func (b CoinfloorTickerAndBitstamp) last() string {
 	return b.Last
 }
 
-func (b ACXTicker) requestUpdate(url string) (CryptoExchange, error) {
+func (b ACXTicker) RequestUpdate(url string) (CryptoExchange, error) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		return b, err
@@ -354,7 +354,7 @@ func (b ACXTicker) last() string {
 	return b.Last
 }
 
-func (b Coinjar) requestUpdate(url string) (CryptoExchange, error) {
+func (b Coinjar) RequestUpdate(url string) (CryptoExchange, error) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		return b, err
@@ -399,5 +399,5 @@ type CryptoExchange interface {
 	high() string
 	low() string
 	last() string
-	requestUpdate(url string) (CryptoExchange, error)
+	RequestUpdate(url string) (CryptoExchange, error)
 }

@@ -28,83 +28,6 @@ func requestWrapper(url string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func geminiBTC(url string) (structs.GeminiTickerBTC, error) {
-	var responseObject structs.GeminiTickerBTC
-	// also the same for https://api.gemini.com/v1/pubticker/ethusd
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return responseObject, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return responseObject, err
-	}
-
-	return responseObject, nil
-}
-
-func geminiETH(url string) (structs.GeminiTickerETH, error) {
-	var responseObject structs.GeminiTickerETH
-	// also the same for https://api.gemini.com/v1/pubticker/ethusd
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return responseObject, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return responseObject, err
-	}
-
-	return responseObject, nil
-}
-
-func IndepentReserve(url string) (structs.IndepentReserve, error) {
-	var responseObject structs.IndepentReserve
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return responseObject, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return responseObject, err
-	}
-
-	return responseObject, nil
-}
-
-func coinfloorAndBitstamp(url string) (structs.CoinfloorTickerAndBitstamp, error) {
-	var responseObject structs.CoinfloorTickerAndBitstamp
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return responseObject, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return responseObject, err
-	}
-
-	return responseObject, nil
-}
-
-func BTCMarket(url string) (structs.BTCMarket, error) {
-	var responseObject structs.BTCMarket
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return responseObject, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return responseObject, err
-	}
-
-	return responseObject, nil
-}
-
 func ACX(url string) (structs.ACXTicker, error) {
 	var responseObject structs.ACXTicker
 	responseData, err := requestWrapper(url)
@@ -139,7 +62,6 @@ func currencyExchangeRates() (map[string]decimal.Decimal, error) {
 	exchangeMap := make(map[string]decimal.Decimal)
 
 	resp, err := http.Get("https://api.exchangeratesapi.io/latest?base=USD")
-	// same for https://api.gemini.com/v1/pubticker/ethusd
 	if err != nil {
 		// should wrap error
 		return nil, err
@@ -208,13 +130,13 @@ func main() {
 		{"Bitstamp_USD_ETH","https://www.bitstamp.net/api/v2/ticker/ethusd/"},
 		{"Bitstamp_USD_BCH","https://www.bitstamp.net/api/v2/ticker/bchusd/"}}
 
-
+	var resseObjectCoinfloorAndBitstamp structs.CoinfloorTickerAndBitstamp
 	for _, v := range urlList {
-		val , err := coinfloorAndBitstamp(v.url)
-		// ch <- CryptoDTO{v.name,val, err}
+		val, err := resseObjectCoinfloorAndBitstamp.RequestUpdate(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 
+	var responseObjectIndependentReserve structs.IndepentReserve
 	urlList2 := []Pair{
 		{"IndependentReserve_AUD_BTC", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud"},
 		{"IndependentReserve_AUD_ETH","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=eth&secondaryCurrencyCode=aud"},
@@ -222,15 +144,19 @@ func main() {
 		{"IndependentReserve_AUD_XRP","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xrp&secondaryCurrencyCode=aud"},
 		{"IndependentReserve_AUD_LTC","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=ltc&secondaryCurrencyCode=aud"}}
 	for _, v := range urlList2 {
-		val, err := IndepentReserve(v.url)
+		val, err := responseObjectIndependentReserve.RequestUpdate(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 
-	btc, err1 := geminiBTC("https://api.gemini.com/v1/pubticker/btcusd")
-	eth, err2 := geminiETH("https://api.gemini.com/v1/pubticker/ethusd")
+	var responseObjectGeminiBTC structs.GeminiTickerBTC
+	btc, err1 := responseObjectGeminiBTC.RequestUpdate("https://api.gemini.com/v1/pubticker/btcusd")
+	var responseObjectGeminiETH structs.GeminiTickerETH
+	eth, err2 := responseObjectGeminiETH.RequestUpdate("https://api.gemini.com/v1/pubticker/ethusd")
 	groupList = append(groupList, CryptoDTO{"GEMINI_USD_BTC", btc,err1})
 	groupList = append(groupList, CryptoDTO{"GEMINI_USD_ETH", eth,err2})
 
+
+	var responseObjectBTC structs.BTCMarket
 	urlList3 := []Pair{
 		{"BTCMarket_AUD_BTC", "https://api.btcmarkets.net/market/BTC/AUD/tick"},
 		{"BTCMarket_AUD_ETH", "https://api.btcmarkets.net/market/ETH/AUD/tick"},
@@ -239,10 +165,10 @@ func main() {
 		{"BTCMarket_AUD_LTC","https://api.btcmarkets.net/market/LTC/AUD/tick"}}
 	for _, v := range urlList3 {
 		// go routine goes here
-		val , err := BTCMarket(v.url)
+		val, err := responseObjectBTC.RequestUpdate(v.url)
+		//val , err := BTCMarket(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
-
 
 	urlList4 := []Pair{
 		{"ACX_AUD_BTC", "https://acx.io:443/api/v2/tickers/btcaud.json"},
@@ -268,17 +194,16 @@ func main() {
 	// check for errors
 	for _, v := range groupList {
 		if v.error != nil {
-			log.Println(v.error.Error())
+			log.Println(v.name, v.error.Error())
 		}
 	}
-	//log.Println(btc)
-	//log.Println(eth)
+
 	if DEBUG {
 		log.Println("got values from Crypto exchange")
 		log.Println(groupList)
 	}
 	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
-	// 14.40s elapsed before async
+	// 14.40s and 8s elapsed before async
 
 
 

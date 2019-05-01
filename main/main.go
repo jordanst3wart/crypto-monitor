@@ -28,36 +28,6 @@ func requestWrapper(url string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func ACX(url string) (structs.ACXTicker, error) {
-	var responseObject structs.ACXTicker
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return responseObject, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return responseObject, err
-	}
-
-	return responseObject, nil
-}
-
-func Coinjar(url string) (structs.Coinjar, error) {
-	var responseObject structs.Coinjar
-	responseData, err := requestWrapper(url)
-	if err != nil {
-		return responseObject, err
-	}
-
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		return responseObject, err
-	}
-
-	return responseObject, nil
-}
-
 func currencyExchangeRates() (map[string]decimal.Decimal, error) {
 	exchangeMap := make(map[string]decimal.Decimal)
 
@@ -94,18 +64,8 @@ type CryptoDTO struct {
 
 func main() {
 	start := time.Now()
-	//////
-	var responseObject2 structs.IndepentReserve
-
-	blah, err1 := responseObject2.RequestUpdate("https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud")
-	if err1 != nil {
-		log.Println("rarr")
-	}
-	log.Println(blah)
-	///////
 
 	DEBUG := false
-	//val1, err1 := cryptoCurrencies()
 	val, err := currencyExchangeRates()
 	groupList := []CryptoDTO{}
 	// ch := make(chan CryptoDTO)
@@ -166,10 +126,10 @@ func main() {
 	for _, v := range urlList3 {
 		// go routine goes here
 		val, err := responseObjectBTC.RequestUpdate(v.url)
-		//val , err := BTCMarket(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 
+	var responseObjectACX structs.ACXTicker
 	urlList4 := []Pair{
 		{"ACX_AUD_BTC", "https://acx.io:443/api/v2/tickers/btcaud.json"},
 		{"ACX_AUD_ETH", "https://acx.io:443/api/v2/tickers/ethaud.json"},
@@ -177,17 +137,18 @@ func main() {
 		{"ACX_AUD_XRP", "https://acx.io:443/api/v2/tickers/ltcaud.json"},
 		{"ACX_AUD_LTC","https://acx.io:443/api/v2/tickers/xrpaud.json"}}
 	for _, v := range urlList4 {
-		val , err := ACX(v.url)
+		val , err := responseObjectACX.RequestUpdate(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 
+	var responseObjectCoinjar structs.Coinjar
 	urlList5 := []Pair{
 		{"Coinjar_AUD_BTC", "https://data.exchange.coinjar.com/products/BTCAUD/ticker"},
 		{"Coinjar_AUD_ETH", "https://data.exchange.coinjar.com/products/ETHAUD/ticker"},
 		{"Coinjar_AUD_XRP","https://data.exchange.coinjar.com/products/XRPAUD/ticker"},
 		{"Coinjar_AUD_LTC", "https://data.exchange.coinjar.com/products/LTCAUD/ticker"}}
 	for _, v := range urlList5 {
-		val , err := Coinjar(v.url)
+		val , err := responseObjectCoinjar.RequestUpdate(v.url)
 		groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
 

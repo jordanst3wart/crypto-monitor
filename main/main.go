@@ -18,27 +18,31 @@ import (
 // TODO make http requests async
 // TODO simplify
 
-func currencyExchangeRates() (map[string]decimal.Decimal, error) {
+func currencyExchangeRates(ch chan ExchangeRates) {
 	exchangeMap := make(map[string]decimal.Decimal)
 
 	resp, err := http.Get("https://api.exchangeratesapi.io/latest?base=USD")
 	if err != nil {
 		// should wrap error
-		return nil, err
+		ch <- ExchangeRates{nil, err}
+		return
 	}
 
 	responseData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		ch <- ExchangeRates{nil, err}
+		return
 	}
 	var responseObject structs.CurrencyExchangeAPI
 	err = json.Unmarshal(responseData, &responseObject)
 	if err != nil {
-		return nil, err
+		ch <- ExchangeRates{nil, err}
+		return
+	} else {
+		exchangeMap["USD2AUD"] = responseObject.Rates.AUD.Div(responseObject.Rates.USD)
+		exchangeMap["GBP2AUD"] = responseObject.Rates.AUD.Div(responseObject.Rates.GDP)
+		ch <-ExchangeRates{exchangeMap, err}
 	}
-	exchangeMap["USD2AUD"] = responseObject.Rates.AUD.Div(responseObject.Rates.USD)
-	exchangeMap["GBP2AUD"] = responseObject.Rates.AUD.Div(responseObject.Rates.GDP)
-	return exchangeMap, err
 }
 
 type Pair struct {
@@ -55,22 +59,28 @@ func requestToExchange(exchange structs.CryptoExchange, urlList []Pair, ch chan 
 }
 
 
+type ExchangeRates struct {
+	rates map[string]decimal.Decimal
+	err error
+}
+
 func main() {
 	start := time.Now()
 
-	DEBUG := true
-	val, err := currencyExchangeRates()
+	//DEBUG := true
+	chRates := make(chan ExchangeRates)
+	go currencyExchangeRates(chRates)
 	//groupList := []structs.CryptoDTO{}
 	ch := make(chan structs.CryptoDTO)
 	// log error at main level
-	if err != nil {
+	/*if err != nil {
 		// possibly send email
 		log.Fatal(err.Error())
 	}
 	if DEBUG {
 		log.Println("Got values from exchange")
 		log.Println(val)
-	}
+	}*/
 
 	urlList := []Pair{
 		{"Coinfloor_GBP_BTC", "https://webapi.coinfloor.co.uk:8090/bist/XBT/GBP/ticker/"},
@@ -145,44 +155,46 @@ func main() {
 
 	for range urlList {
 		// Use the response (<-ch).body
-		fmt.Println(<-ch)
+		log.Println(<-ch)
 	}
 
 	for range urlList2 {
 		// Use the response (<-ch).body
-		fmt.Println(<-ch)
+		log.Println(<-ch)
 	}
 
 	for range urlList2a {
 		// Use the response (<-ch).body
-		fmt.Println(<-ch)
+		log.Println(<-ch)
 	}
 
 	for range urlList2b {
 		// Use the response (<-ch).body
-		fmt.Println(<-ch)
+		log.Println(<-ch)
 	}
 
 	for range urlList3 {
 		// Use the response (<-ch).body
-		fmt.Println(<-ch)
+		log.Println(<-ch)
 	}
 
 	for range urlList4 {
 		// Use the response (<-ch).body
-		fmt.Println(<-ch)
+		log.Println(<-ch)
 	}
 
 	for range urlList5 {
 		// Use the response (<-ch).body
-		fmt.Println(<-ch)
+		log.Println(<-ch)
 	}
+	log.Println(<-chRates)
 	/*if DEBUG {
 		log.Println("got values from Crypto exchange")
 		log.Println(groupList)
 	}*/
-	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
+	fmt.Println("%.2fs elapsed\n", time.Since(start).Seconds())
 	// 14.40s and 8s elapsed before async
+	// 1.6s after async
 
 
 

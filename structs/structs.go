@@ -29,6 +29,12 @@ type CurrencyExchange struct {
 	USD decimal.Decimal `json:"USD"`
 }
 
+type CryptoDTO struct {
+	name  string
+	coin  CryptoExchange
+	error error
+}
+
 // flatten struct
 // https://stackoverflow.com/questions/24642575/go-golang-flatten-a-nested-json
 type GeminiTickerBTC struct {
@@ -111,6 +117,16 @@ type Coinjar struct {
 	Ask    string    `json:"ask"`
 }
 
+// TODO put logic in here for RequestUpdate to reduce repeating code
+func requestWrapper(url string) ([]byte, error) {
+	var responseData []byte
+	resp, err := http.Get(url)
+	if err != nil {
+		return responseData, err
+	}
+
+	return ioutil.ReadAll(resp.Body)
+}
 
 func (b BTCMarket) volume() string {
 	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
@@ -136,43 +152,26 @@ func (b BTCMarket) last() string {
 	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
-
-func requestWrapper(url string) ([]byte, error) {
-	var responseData []byte
-	resp, err := http.Get(url)
-	if err != nil {
-		return responseData, err
-	}
-
-	return ioutil.ReadAll(resp.Body)
-}
-
-func (b BTCMarket) RequestUpdate(url string) (CryptoExchange, error) {
+func (b BTCMarket) RequestUpdate(name string, url string, ch chan CryptoDTO) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return b, err
+		ch <- CryptoDTO{name, b,err}
+		//return b, err
+	} else {
+		err = json.Unmarshal(responseData, &b)
+		ch <- CryptoDTO{name, b,err}
 	}
-
-	err = json.Unmarshal(responseData, &b)
-	if err != nil {
-		return b, err
-	}
-
-	return b, nil
 }
 
-func (b IndepentReserve) RequestUpdate(url string) (CryptoExchange, error) {
+func (b IndepentReserve) RequestUpdate(name string, url string, ch chan CryptoDTO) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return b, err
+		ch <- CryptoDTO{name, b,err}
+		//return b, err
+	} else {
+		err = json.Unmarshal(responseData, &b)
+		ch <- CryptoDTO{name, b,err}
 	}
-
-	err = json.Unmarshal(responseData, &b)
-	if err != nil {
-		return b, err
-	}
-
-	return b, nil
 }
 
 func (b IndepentReserve) volume() string {
@@ -199,18 +198,15 @@ func (b IndepentReserve) last() string {
 	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
-func (b GeminiTickerETH) RequestUpdate(url string) (CryptoExchange, error) {
+func (b GeminiTickerETH) RequestUpdate(name string, url string, ch chan CryptoDTO) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return b, err
+		ch <- CryptoDTO{name, b,err}
+		//return b, err
+	} else {
+		err = json.Unmarshal(responseData, &b)
+		ch <- CryptoDTO{name, b,err}
 	}
-
-	err = json.Unmarshal(responseData, &b)
-	if err != nil {
-		return b, err
-	}
-
-	return b, nil
 }
 
 func (b GeminiTickerETH) volume() string {
@@ -237,18 +233,15 @@ func (b GeminiTickerETH) last() string {
 	return b.Last
 }
 
-func (b GeminiTickerBTC) RequestUpdate(url string) (CryptoExchange, error) {
+func (b GeminiTickerBTC) RequestUpdate(name string, url string, ch chan CryptoDTO) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return b, err
+		ch <- CryptoDTO{name, b,err}
+		//return b, err
+	} else {
+		err = json.Unmarshal(responseData, &b)
+		ch <- CryptoDTO{name, b,err}
 	}
-
-	err = json.Unmarshal(responseData, &b)
-	if err != nil {
-		return b, err
-	}
-
-	return b, nil
 }
 
 func (b GeminiTickerBTC) volume() string {
@@ -275,18 +268,15 @@ func (b GeminiTickerBTC) last() string {
 	return b.Last
 }
 
-func (b CoinfloorTickerAndBitstamp) RequestUpdate(url string) (CryptoExchange, error) {
+func (b CoinfloorTickerAndBitstamp) RequestUpdate(name string, url string, ch chan CryptoDTO) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return b, err
+		ch <- CryptoDTO{name, b,err}
+		//return b, err
+	} else {
+		err = json.Unmarshal(responseData, &b)
+		ch <- CryptoDTO{name, b,err}
 	}
-
-	err = json.Unmarshal(responseData, &b)
-	if err != nil {
-		return b, err
-	}
-
-	return b, nil
 }
 
 func (b CoinfloorTickerAndBitstamp) volume() string {
@@ -313,18 +303,15 @@ func (b CoinfloorTickerAndBitstamp) last() string {
 	return b.Last
 }
 
-func (b ACXTicker) RequestUpdate(url string) (CryptoExchange, error) {
+func (b ACXTicker) RequestUpdate(name string, url string, ch chan CryptoDTO) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return b, err
+		ch <- CryptoDTO{name, b,err}
+		//return b, err
+	} else {
+		err = json.Unmarshal(responseData, &b)
+		ch <- CryptoDTO{name, b,err}
 	}
-
-	err = json.Unmarshal(responseData, &b)
-	if err != nil {
-		return b, err
-	}
-
-	return b, nil
 }
 
 func (b ACXTicker) volume() string {
@@ -351,18 +338,15 @@ func (b ACXTicker) last() string {
 	return b.Last
 }
 
-func (b Coinjar) RequestUpdate(url string) (CryptoExchange, error) {
+func (b Coinjar) RequestUpdate(name string, url string, ch chan CryptoDTO) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		return b, err
+		ch <- CryptoDTO{name, b,err}
+		//return b, err
+	} else {
+		err = json.Unmarshal(responseData, &b)
+		ch <- CryptoDTO{name, b,err}
 	}
-
-	err = json.Unmarshal(responseData, &b)
-	if err != nil {
-		return b, err
-	}
-
-	return b, nil
 }
 
 func (b Coinjar) volume() string {
@@ -396,5 +380,6 @@ type CryptoExchange interface {
 	high() string
 	low() string
 	last() string
-	RequestUpdate(url string) (CryptoExchange, error)
+	//exchange.RequestUpdate(v.name, v.url, ch)
+	RequestUpdate(name string, url string, ch chan CryptoDTO)
 }

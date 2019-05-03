@@ -29,10 +29,13 @@ type CurrencyExchange struct {
 }
 
 type CryptoDTO struct {
-	name  string
-	coin  CryptoExchange
-	error error
+	Name  string
+	Coin  CryptoExchange
+	Error error
+	Currency string
+	Crypto string
 }
+//
 
 // flatten struct
 // https://stackoverflow.com/questions/24642575/go-golang-flatten-a-nested-json
@@ -127,258 +130,259 @@ func requestWrapper(url string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (b BTCMarket) volume() string {
+func (b BTCMarket) VolumeFloat() string {
 	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
 }
 
-func (b BTCMarket) ask() string {
+func (b BTCMarket) AskFloat() string {
 	return strconv.FormatFloat(b.Ask, 'f', -1, 64)
 }
 
-func (b BTCMarket) bid() string {
+func (b BTCMarket) BidFloat() string {
 	return strconv.FormatFloat(b.Bid, 'f', -1, 64)
 }
 
-func (b BTCMarket) high() string {
+func (b BTCMarket) HighFloat() string {
 	return strconv.FormatFloat(b.High, 'f', -1, 64)
 }
 
-func (b BTCMarket) low() string {
+func (b BTCMarket) LowFloat() string {
 	return strconv.FormatFloat(b.Low, 'f', -1, 64)
 }
 
-func (b BTCMarket) last() string {
+func (b BTCMarket) LastFloat() string {
 	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
-func (b BTCMarket) RequestUpdate(name string, url string, ch chan CryptoDTO) {
+func (b BTCMarket) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 	}
 }
 
-func (b IndepentReserve) RequestUpdate(name string, url string, ch chan CryptoDTO) {
+func (b IndepentReserve) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 	}
 }
 
-func (b IndepentReserve) volume() string {
+func (b IndepentReserve) VolumeFloat() string {
 	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
 }
 
-func (b IndepentReserve) ask() string {
+func (b IndepentReserve) AskFloat() string {
 	return strconv.FormatFloat(b.Ask, 'f', -1, 64)
 }
 
-func (b IndepentReserve) bid() string {
+func (b IndepentReserve) BidFloat() string {
 	return strconv.FormatFloat(b.Bid, 'f', -1, 64)
 }
 
-func (b IndepentReserve) high() string {
+func (b IndepentReserve) HighFloat() string {
 	return strconv.FormatFloat(b.High, 'f', -1, 64)
 }
 
-func (b IndepentReserve) low() string {
+func (b IndepentReserve) LowFloat() string {
 	return strconv.FormatFloat(b.Low, 'f', -1, 64)
 }
 
-func (b IndepentReserve) last() string {
+func (b IndepentReserve) LastFloat() string {
 	return strconv.FormatFloat(b.Last, 'f', -1, 64)
 }
 
-func (b GeminiTickerETH) RequestUpdate(name string, url string, ch chan CryptoDTO) {
+func (b GeminiTickerETH) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 	}
 }
 
-func (b GeminiTickerETH) volume() string {
+func (b GeminiTickerETH) VolumeFloat() string {
 	return b.Volume
 }
 
-func (b GeminiTickerETH) ask() string {
+func (b GeminiTickerETH) AskFloat() string {
 	return b.Ask
 }
 
-func (b GeminiTickerETH) bid() string {
+func (b GeminiTickerETH) BidFloat() string {
 	return b.Bid
 }
 
-func (b GeminiTickerETH) high() string {
+func (b GeminiTickerETH) HighFloat() string {
 	return b.High
 }
 
-func (b GeminiTickerETH) low() string {
+func (b GeminiTickerETH) LowFloat() string {
 	return b.Low
 }
 
-func (b GeminiTickerETH) last() string {
+func (b GeminiTickerETH) LastFloat() string {
 	return b.Last
 }
 
-func (b GeminiTickerBTC) RequestUpdate(name string, url string, ch chan CryptoDTO) {
+func (b GeminiTickerBTC) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 	}
 }
 
-func (b GeminiTickerBTC) volume() string {
+func (b GeminiTickerBTC) VolumeFloat() string {
 	return b.Volume
 }
 
-func (b GeminiTickerBTC) ask() string {
+func (b GeminiTickerBTC) AskFloat() string {
 	return b.Ask
 }
 
-func (b GeminiTickerBTC) bid() string {
+func (b GeminiTickerBTC) BidFloat() string {
 	return b.Bid
 }
 
-func (b GeminiTickerBTC) high() string {
+func (b GeminiTickerBTC) HighFloat() string {
 	return b.High
 }
 
-func (b GeminiTickerBTC) low() string {
+func (b GeminiTickerBTC) LowFloat() string {
 	return b.Low
 }
 
-func (b GeminiTickerBTC) last() string {
+func (b GeminiTickerBTC) LastFloat() string {
 	return b.Last
 }
 
-func (b CoinfloorTickerAndBitstamp) RequestUpdate(name string, url string, ch chan CryptoDTO) {
+func (b CoinfloorTickerAndBitstamp) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 	}
 }
 
-func (b CoinfloorTickerAndBitstamp) volume() string {
+func (b CoinfloorTickerAndBitstamp) VolumeFloat() string {
 	return b.Volume
 }
 
-func (b CoinfloorTickerAndBitstamp) ask() string {
+func (b CoinfloorTickerAndBitstamp) AskFloat() string {
 	return b.Ask
 }
 
-func (b CoinfloorTickerAndBitstamp) bid() string {
+func (b CoinfloorTickerAndBitstamp) BidFloat() string {
 	return b.Bid
 }
 
-func (b CoinfloorTickerAndBitstamp) high() string {
+func (b CoinfloorTickerAndBitstamp) HighFloat() string {
 	return b.High
 }
 
-func (b CoinfloorTickerAndBitstamp) low() string {
+func (b CoinfloorTickerAndBitstamp) LowFloat() string {
 	return b.Low
 }
 
-func (b CoinfloorTickerAndBitstamp) last() string {
+func (b CoinfloorTickerAndBitstamp) LastFloat() string {
 	return b.Last
 }
 
-func (b ACXTicker) RequestUpdate(name string, url string, ch chan CryptoDTO) {
+func (b ACXTicker) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 	}
 }
 
-func (b ACXTicker) volume() string {
+func (b ACXTicker) VolumeFloat() string {
 	return b.Volume
 }
 
-func (b ACXTicker) ask() string {
+func (b ACXTicker) AskFloat() string {
 	return b.Ask
 }
 
-func (b ACXTicker) bid() string {
+func (b ACXTicker) BidFloat() string {
 	return b.Bid
 }
 
-func (b ACXTicker) high() string {
+func (b ACXTicker) HighFloat() string {
 	return b.High
 }
 
-func (b ACXTicker) low() string {
+func (b ACXTicker) LowFloat() string {
 	return b.Low
 }
 
-func (b ACXTicker) last() string {
+func (b ACXTicker) LastFloat() string {
 	return b.Last
 }
 
-func (b Coinjar) RequestUpdate(name string, url string, ch chan CryptoDTO) {
+func (b Coinjar) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
+	// RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b,err}
+		ch <- CryptoDTO{name, b,err, currency, crypto}
 	}
 }
 
-func (b Coinjar) volume() string {
+func (b Coinjar) VolumeFloat() string {
 	return b.Volume
 }
 
-func (b Coinjar) ask() string {
+func (b Coinjar) AskFloat() string {
 	return b.Ask
 }
 
-func (b Coinjar) bid() string {
+func (b Coinjar) BidFloat() string {
 	return b.Bid
 }
 
-func (b Coinjar) high() string {
+func (b Coinjar) HighFloat() string {
 	return b.High
 }
 
-func (b Coinjar) low() string {
+func (b Coinjar) LowFloat() string {
 	return b.Low
 }
 
-func (b Coinjar) last() string {
+func (b Coinjar) LastFloat() string {
 	return b.Last
 }
 
 type CryptoExchange interface {
-	volume() string
-	ask() string
-	bid() string
-	high() string
-	low() string
-	last() string
-	//exchange.RequestUpdate(v.name, v.url, ch)
-	RequestUpdate(name string, url string, ch chan CryptoDTO)
+	VolumeFloat() string
+	AskFloat() string
+	BidFloat() string
+	HighFloat() string
+	LowFloat() string
+	LastFloat() string
+	RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string)
+	// RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 }

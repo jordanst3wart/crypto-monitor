@@ -49,7 +49,7 @@ type Four struct {
 
 func requestToExchange(exchange structs.CryptoExchange, urlList []Four, ch chan structs.CryptoDTO){
 	for _, v := range urlList {
-		go exchange.RequestUpdate(v.name, v.url, ch)
+		go exchange.RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 		//ch<-CryptoDTO{v.name,val, err}
 		//groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
@@ -154,8 +154,12 @@ func main() {
 
 	for range urlList {
 		// Use the response (<-ch).body
-		//val:=<-ch
-		//val.error
+		/*val:=<-ch
+		if val.Error != nil {
+			log.Println(val.Error)
+		} else {
+			log.Println(val)
+		}*/
 		log.Println(<-ch)
 		//bid() string
 		//ask()
@@ -188,7 +192,8 @@ func main() {
 
 	for range urlList5 {
 		// Use the response (<-ch).body
-		log.Println(<-ch)
+		foo:=<-ch
+		log.Println(foo.Coin.VolumeFloat())
 	}
 	log.Println(<-chRates)
 	//val:= <- chRates

@@ -2,7 +2,6 @@ package structs
 
 import (
 	"encoding/json"
-	"github.com/shopspring/decimal" // could probably just use float64
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -23,10 +22,10 @@ type CurrencyExchangeAPI struct {
 }
 
 type CurrencyExchange struct {
-	GDP decimal.Decimal `json:"GBP"`
-	AUD decimal.Decimal `json:"AUD"`
-	EUR decimal.Decimal `json:"EUR"`
-	USD decimal.Decimal `json:"USD"`
+	GDP float64 `json:"GBP"`
+	AUD float64 `json:"AUD"`
+	EUR float64 `json:"EUR"`
+	USD float64 `json:"USD"`
 }
 
 type CryptoDTO struct {

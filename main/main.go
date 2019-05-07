@@ -14,6 +14,7 @@ import (
 )
 
 
+// TODO change interface to use float64 for numbers rather than strings
 // TODO simplify
 
 func currencyExchangeRates(ch chan ExchangeRates) {
@@ -62,6 +63,32 @@ type ExchangeRates struct {
 	err error
 }
 
+/*
+func convertHelper(conversion float64, dto structs.CryptoDTO) (structs.CryptoDTO){
+	tmpCoin := structs.CryptoExchange{"1","2"}
+
+	dto.Coin.LowFloat()*conversion
+
+	return structs.CryptoDTO{
+		dto.Name,
+		dto.Coin,
+		dto.Error,
+		dto.Currency,
+		dto.Crypto,
+	}
+}
+
+func foo(conversion float64, crypto structs.CryptoDTO ) {
+	if (crypto.Currency == "USD") {
+
+	} else if (crypto.Currency == "GBP") {
+		val.Coin.LowFloat()
+
+	} else {
+		// error
+	}
+}*/
+
 func main() {
 	start := time.Now()
 
@@ -102,20 +129,14 @@ func main() {
 		{"IndependentReserve_LTC","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=ltc&secondaryCurrencyCode=aud", "AUD", "LTC"}}
 	requestToExchange(responseObjectIndependentReserve, urlList2, ch)
 
-
 	urlList2a := []Four{
 		{"GEMINI_BTC", "https://api.gemini.com/v1/pubticker/btcusd", "USD", "BTC"}}
 	var responseObjectGeminiBTC structs.GeminiTickerBTC
-	//btc, err1 := responseObjectGeminiBTC.RequestUpdate("https://api.gemini.com/v1/pubticker/btcusd")
 	requestToExchange(responseObjectGeminiBTC, urlList2a, ch)
 	urlList2b := []Four{
 		{"GEMINI_ETH", "https://api.gemini.com/v1/pubticker/ethusd", "USD", "ETH"}}
 	var responseObjectGeminiETH structs.GeminiTickerETH
 	requestToExchange(responseObjectGeminiETH, urlList2b, ch)
-	//eth, err2 := responseObjectGeminiETH.RequestUpdate("https://api.gemini.com/v1/pubticker/ethusd")
-	//groupList = append(groupList, CryptoDTO{"GEMINI_USD_BTC", btc,err1})
-	//groupList = append(groupList, CryptoDTO{"GEMINI_USD_ETH", eth,err2})
-
 
 	var responseObjectBTC structs.BTCMarket
 	urlList3 := []Four{
@@ -150,17 +171,25 @@ func main() {
 		}
 	}*/
 	fmt.Println("%.2fs elapsed\n", time.Since(start).Seconds())
-
+	//log.Println(<-chRates)
+	val1:=<-chRates
+	if val1.err != nil {
+		log.Println(val1.err)
+	} else {
+		log.Println(val1.err)
+		//log.Println(val1.rates["GBP2AUD"])
+	}
 
 	for range urlList {
 		// Use the response (<-ch).body
-		/*val:=<-ch
+		val:=<-ch
 		if val.Error != nil {
 			log.Println(val.Error)
 		} else {
-			log.Println(val)
-		}*/
-		log.Println(<-ch)
+			log.Println(val.Currency)
+			val.Coin.LowFloat()
+		}
+		//log.Println(<-ch)
 		//bid() string
 		//ask()
 	}
@@ -195,7 +224,6 @@ func main() {
 		foo:=<-ch
 		log.Println(foo.Coin.VolumeFloat())
 	}
-	log.Println(<-chRates)
 	//val:= <- chRates
 	/*if DEBUG {
 		log.Println("got values from Crypto exchange")

@@ -130,28 +130,28 @@ func requestWrapper(url string) ([]byte, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (b BTCMarket) VolumeFloat() string {
-	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
+func (b BTCMarket) VolumeFloat() (float64, error) {
+	return b.Volume, nil
 }
 
-func (b BTCMarket) AskFloat() string {
-	return strconv.FormatFloat(b.Ask, 'f', -1, 64)
+func (b BTCMarket) AskFloat() (float64, error) {
+	return b.Ask, nil
 }
 
-func (b BTCMarket) BidFloat() string {
-	return strconv.FormatFloat(b.Bid, 'f', -1, 64)
+func (b BTCMarket) BidFloat() (float64, error) {
+	return b.Bid, nil
 }
 
-func (b BTCMarket) HighFloat() string {
-	return strconv.FormatFloat(b.High, 'f', -1, 64)
+func (b BTCMarket) HighFloat() (float64, error) {
+	return b.High, nil
 }
 
-func (b BTCMarket) LowFloat() string {
-	return strconv.FormatFloat(b.Low, 'f', -1, 64)
+func (b BTCMarket) LowFloat() (float64, error) {
+	return b.Low, nil
 }
 
-func (b BTCMarket) LastFloat() string {
-	return strconv.FormatFloat(b.Last, 'f', -1, 64)
+func (b BTCMarket) LastFloat() (float64, error) {
+	return b.Last, nil
 }
 
 func (b BTCMarket) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
@@ -176,28 +176,28 @@ func (b IndepentReserve) RequestUpdate(name string, url string, ch chan CryptoDT
 	}
 }
 
-func (b IndepentReserve) VolumeFloat() string {
-	return strconv.FormatFloat(b.Volume, 'f', -1, 64)
+func (b IndepentReserve) VolumeFloat() (float64, error) {
+	return b.Volume, nil
 }
 
-func (b IndepentReserve) AskFloat() string {
-	return strconv.FormatFloat(b.Ask, 'f', -1, 64)
+func (b IndepentReserve) AskFloat() (float64, error) {
+	return b.Ask, nil
 }
 
-func (b IndepentReserve) BidFloat() string {
-	return strconv.FormatFloat(b.Bid, 'f', -1, 64)
+func (b IndepentReserve) BidFloat() (float64, error) {
+	return b.Bid, nil
 }
 
-func (b IndepentReserve) HighFloat() string {
-	return strconv.FormatFloat(b.High, 'f', -1, 64)
+func (b IndepentReserve) HighFloat() (float64, error) {
+	return b.High, nil
 }
 
-func (b IndepentReserve) LowFloat() string {
-	return strconv.FormatFloat(b.Low, 'f', -1, 64)
+func (b IndepentReserve) LowFloat() (float64, error) {
+	return b.Low, nil
 }
 
-func (b IndepentReserve) LastFloat() string {
-	return strconv.FormatFloat(b.Last, 'f', -1, 64)
+func (b IndepentReserve) LastFloat() (float64, error) {
+	return b.Last, nil
 }
 
 func (b GeminiTickerETH) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
@@ -211,28 +211,28 @@ func (b GeminiTickerETH) RequestUpdate(name string, url string, ch chan CryptoDT
 	}
 }
 
-func (b GeminiTickerETH) VolumeFloat() string {
-	return b.Volume
+func (b GeminiTickerETH) VolumeFloat() (float64, error) {
+	return strconv.ParseFloat(b.Volume, 64)
 }
 
-func (b GeminiTickerETH) AskFloat() string {
-	return b.Ask
+func (b GeminiTickerETH) AskFloat() (float64, error) {
+	return strconv.ParseFloat(b.Ask, 64)
 }
 
-func (b GeminiTickerETH) BidFloat() string {
-	return b.Bid
+func (b GeminiTickerETH) BidFloat() (float64, error) {
+	return strconv.ParseFloat(b.Bid, 64)
 }
 
-func (b GeminiTickerETH) HighFloat() string {
-	return b.High
+func (b GeminiTickerETH) HighFloat() (float64, error) {
+	return strconv.ParseFloat(b.High, 64)
 }
 
-func (b GeminiTickerETH) LowFloat() string {
-	return b.Low
+func (b GeminiTickerETH) LowFloat() (float64, error) {
+	return strconv.ParseFloat(b.Low, 64)
 }
 
-func (b GeminiTickerETH) LastFloat() string {
-	return b.Last
+func (b GeminiTickerETH) LastFloat() (float64, error) {
+	return strconv.ParseFloat(b.Last, 64)
 }
 
 func (b GeminiTickerBTC) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
@@ -246,28 +246,28 @@ func (b GeminiTickerBTC) RequestUpdate(name string, url string, ch chan CryptoDT
 	}
 }
 
-func (b GeminiTickerBTC) VolumeFloat() string {
-	return b.Volume
+func (b GeminiTickerBTC) VolumeFloat() (float64, error) {
+	return strconv.ParseFloat(b.Volume, 64)
 }
 
-func (b GeminiTickerBTC) AskFloat() string {
-	return b.Ask
+func (b GeminiTickerBTC) AskFloat() (float64, error) {
+	return strconv.ParseFloat(b.Ask, 64)
 }
 
-func (b GeminiTickerBTC) BidFloat() string {
-	return b.Bid
+func (b GeminiTickerBTC) BidFloat() (float64, error) {
+	return strconv.ParseFloat(b.Bid, 64)
 }
 
-func (b GeminiTickerBTC) HighFloat() string {
-	return b.High
+func (b GeminiTickerBTC) HighFloat() (float64, error) {
+	return strconv.ParseFloat(b.High, 64)
 }
 
-func (b GeminiTickerBTC) LowFloat() string {
-	return b.Low
+func (b GeminiTickerBTC) LowFloat() (float64, error) {
+	return strconv.ParseFloat(b.Low, 64)
 }
 
-func (b GeminiTickerBTC) LastFloat() string {
-	return b.Last
+func (b GeminiTickerBTC) LastFloat() (float64, error) {
+	return strconv.ParseFloat(b.Last, 64)
 }
 
 func (b CoinfloorTickerAndBitstamp) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
@@ -281,28 +281,28 @@ func (b CoinfloorTickerAndBitstamp) RequestUpdate(name string, url string, ch ch
 	}
 }
 
-func (b CoinfloorTickerAndBitstamp) VolumeFloat() string {
-	return b.Volume
+func (b CoinfloorTickerAndBitstamp) VolumeFloat() (float64, error) {
+	return strconv.ParseFloat(b.Volume, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) AskFloat() string {
-	return b.Ask
+func (b CoinfloorTickerAndBitstamp) AskFloat() (float64, error) {
+	return strconv.ParseFloat(b.Ask, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) BidFloat() string {
-	return b.Bid
+func (b CoinfloorTickerAndBitstamp) BidFloat() (float64, error) {
+	return strconv.ParseFloat(b.Bid, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) HighFloat() string {
-	return b.High
+func (b CoinfloorTickerAndBitstamp) HighFloat() (float64, error) {
+	return strconv.ParseFloat(b.High, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) LowFloat() string {
-	return b.Low
+func (b CoinfloorTickerAndBitstamp) LowFloat() (float64, error) {
+	return strconv.ParseFloat(b.Low, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) LastFloat() string {
-	return b.Last
+func (b CoinfloorTickerAndBitstamp) LastFloat() (float64, error) {
+	return strconv.ParseFloat(b.Last, 64)
 }
 
 func (b ACXTicker) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
@@ -316,28 +316,28 @@ func (b ACXTicker) RequestUpdate(name string, url string, ch chan CryptoDTO, cur
 	}
 }
 
-func (b ACXTicker) VolumeFloat() string {
-	return b.Volume
+func (b ACXTicker) VolumeFloat() (float64, error) {
+	return strconv.ParseFloat(b.Volume, 64)
 }
 
-func (b ACXTicker) AskFloat() string {
-	return b.Ask
+func (b ACXTicker) AskFloat() (float64, error) {
+	return strconv.ParseFloat(b.Ask, 64)
 }
 
-func (b ACXTicker) BidFloat() string {
-	return b.Bid
+func (b ACXTicker) BidFloat() (float64, error) {
+	return strconv.ParseFloat(b.Bid, 64)
 }
 
-func (b ACXTicker) HighFloat() string {
-	return b.High
+func (b ACXTicker) HighFloat() (float64, error) {
+	return strconv.ParseFloat(b.High, 64)
 }
 
-func (b ACXTicker) LowFloat() string {
-	return b.Low
+func (b ACXTicker) LowFloat() (float64, error) {
+	return strconv.ParseFloat(b.Low, 64)
 }
 
-func (b ACXTicker) LastFloat() string {
-	return b.Last
+func (b ACXTicker) LastFloat() (float64, error) {
+	return strconv.ParseFloat(b.Last, 64)
 }
 
 func (b Coinjar) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
@@ -352,37 +352,37 @@ func (b Coinjar) RequestUpdate(name string, url string, ch chan CryptoDTO, curre
 	}
 }
 
-func (b Coinjar) VolumeFloat() string {
-	return b.Volume
+func (b Coinjar) VolumeFloat() (float64, error) {
+	return strconv.ParseFloat(b.Volume, 64)
 }
 
-func (b Coinjar) AskFloat() string {
-	return b.Ask
+func (b Coinjar) AskFloat() (float64, error) {
+	return strconv.ParseFloat(b.Ask, 64)
 }
 
-func (b Coinjar) BidFloat() string {
-	return b.Bid
+func (b Coinjar) BidFloat() (float64, error) {
+	return strconv.ParseFloat(b.Bid, 64)
 }
 
-func (b Coinjar) HighFloat() string {
-	return b.High
+func (b Coinjar) HighFloat() (float64, error) {
+	return strconv.ParseFloat(b.High, 64)
 }
 
-func (b Coinjar) LowFloat() string {
-	return b.Low
+func (b Coinjar) LowFloat() (float64, error) {
+	return strconv.ParseFloat(b.Low, 64)
 }
 
-func (b Coinjar) LastFloat() string {
-	return b.Last
+func (b Coinjar) LastFloat() (float64, error) {
+	return strconv.ParseFloat(b.Last, 64)
 }
 
 type CryptoExchange interface {
-	VolumeFloat() string
-	AskFloat() string
-	BidFloat() string
-	HighFloat() string
-	LowFloat() string
-	LastFloat() string
+	VolumeFloat() (float64, error)
+	AskFloat() (float64, error)
+	BidFloat() (float64, error)
+	HighFloat() (float64, error)
+	LowFloat() (float64, error)
+	LastFloat() (float64, error)
 	RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string)
 	// RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 }

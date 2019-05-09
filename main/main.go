@@ -94,6 +94,12 @@ func convertHelper(conversion float64, dto structs.CryptoDTO) (structs.CryptoDTO
 	}
 }
 
+func CheckArbitage(exchange1 structs.CryptoDTO, exchange2 structs.CryptoDTO) float64 {
+	bid, _ := exchange1.Coin.BidFloat()
+	ask, _ := exchange2.Coin.AskFloat()
+	return bid / ask
+}
+
 func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate ExchangeRates) structs.CryptoDTO {
 	switch crypto.Currency {
 	case "USD":
@@ -174,6 +180,9 @@ func main() {
 				tmpVal:=ConvertCurrency(val,val1)
 				log.Println(tmpVal)
 				// TODO check for arbitage
+				// for each val go other each other val
+				//CheckArbitage()
+				// if greater than some margin send email
 				// standardise logging
 			}
 		}

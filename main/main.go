@@ -68,31 +68,45 @@ type startData struct {
 	list []Four
 }
 
-/*
 func convertHelper(conversion float64, dto structs.CryptoDTO) (structs.CryptoDTO){
-	tmpCoin := structs.CryptoExchange{"1","2"}
 
-	dto.Coin.LowFloat()*conversion
+	last, _   :=dto.Coin.LastFloat()
+	high, _   := dto.Coin.HighFloat()
+	low, _    := dto.Coin.LowFloat()
+	volume, _ := dto.Coin.VolumeFloat()
+	ask, _    := dto.Coin.AskFloat()
+	bid, _    := dto.Coin.BidFloat()
+
+	tmpCoin := structs.BTCMarket{
+		last * conversion,
+		high * conversion,
+		low * conversion,
+		volume * conversion,
+		bid * conversion,
+		ask * conversion}
 
 	return structs.CryptoDTO{
 		dto.Name,
-		dto.Coin,
+		tmpCoin,
 		dto.Error,
-		dto.Currency,
+		"AUD",
 		dto.Crypto,
 	}
 }
 
-func foo(conversion float64, crypto structs.CryptoDTO ) {
-	if (crypto.Currency == "USD") {
-
-	} else if (crypto.Currency == "GBP") {
-		val.Coin.LowFloat()
-
-	} else {
-		// error
+func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate ExchangeRates) structs.CryptoDTO {
+	switch crypto.Currency {
+	case "USD":
+		return convertHelper(exchangeRate.rates["USD2AUD"],crypto)
+	case "GBP":
+		return convertHelper(exchangeRate.rates["GBP2AUD"],crypto)
+	case "AUD":
+		return crypto
+	default:
+		fmt.Printf("Unknown currency")
+		return structs.CryptoDTO{}
 	}
-}*/
+}
 
 func calculate(data startData, ch chan structs.CryptoDTO) {
 	switch data.exchange {
@@ -142,20 +156,12 @@ func main() {
 		calculate(elem, ch)
 	}
 
-	// check for errors
-	/*for _, v := range groupList {
-		if v.error != nil {
-			log.Println(v.name, v.error.Error())
-		}
-	}*/
 	fmt.Println("%.2fs elapsed\n", time.Since(start).Seconds())
-	//log.Println(<-chRates)
 	val1:=<-chRates
 	if val1.err != nil {
 		log.Println(val1.err)
 	} else {
-		log.Println(val1.err)
-		//log.Println(val1.rates["GBP2AUD"])
+		log.Println(val1)
 	}
 
 	for _, app := range startData {
@@ -165,8 +171,9 @@ func main() {
 				log.Println("Name:", val.Name, "Error", val.Error)
 			} else {
 				log.Println(val)
-				//val.Coin.LowFloat()
-				// TODO convert all to AUD
+				tmpVal:=ConvertCurrency(val,val1)
+				log.Println(tmpVal)
+				// TODO check for arbitage
 				// standardise logging
 			}
 		}
@@ -179,7 +186,6 @@ func main() {
 	fmt.Println("%.2fs elapsed\n", time.Since(start).Seconds())
 	// 14.40s and 8s elapsed before async
 	// 1.6s after async
-
 
 
 	// send email if arbitage found

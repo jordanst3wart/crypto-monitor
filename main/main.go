@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -114,6 +115,20 @@ func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate ExchangeRates) struc
 	}
 }
 
+func UniqueStrings(input []string) []string {
+	u := make([]string, 0, len(input))
+	m := make(map[string]bool)
+
+	for _, val := range input {
+		if _, ok := m[val]; !ok {
+			m[val] = true
+			u = append(u, val)
+		}
+	}
+	return u
+}
+
+
 func calculate(data startData, ch chan structs.CryptoDTO) {
 	switch data.exchange {
 	case "CoinfloorTickerAndBitstamp":
@@ -149,9 +164,15 @@ func calculate(data startData, ch chan structs.CryptoDTO) {
 	}
 }
 
+func foo2(){
+
+}
+
 func main() {
 	start := time.Now()
 
+	var ARB_RATIO float64
+	ARB_RATIO = 1.002
 	//DEBUG := true
 	chRates := make(chan ExchangeRates)
 	go currencyExchangeRates(chRates)
@@ -170,14 +191,17 @@ func main() {
 		log.Println(val1)
 	}
 
+	listThing := []structs.CryptoDTO{}
+
 	for _, app := range startData {
 		for range app.list {
 			val:=<-ch
 			if val.Error != nil {
 				log.Println("Name:", val.Name, "Error", val.Error)
 			} else {
-				log.Println(val)
+				//log.Println(val)
 				tmpVal:=ConvertCurrency(val,val1)
+				listThing = append(listThing,tmpVal)
 				log.Println(tmpVal)
 				// TODO check for arbitage
 				// for each val go other each other val
@@ -187,6 +211,48 @@ func main() {
 			}
 		}
 	}
+
+	// sort cryptos by crypto-currency
+	set := []string{}
+	for _, item := range listThing {
+		set = append(set,item.Crypto)
+	}
+	uniqueCryptos := UniqueStrings(set)
+	mapCrypto := map[string][]structs.CryptoDTO{}
+	for i := range uniqueCryptos {
+		listCrypto := []structs.CryptoDTO{}
+		for _, item := range listThing {
+			if item.Crypto == uniqueCryptos[i] {
+				listCrypto = append(listCrypto, item)
+			}
+		}
+		mapCrypto[uniqueCryptos[i]] = listCrypto
+	}
+
+	type arbStruct struct {
+		name, crypto string
+		arb float64
+	}
+
+	listArb := []arbStruct{}
+	for _, cryptoList := range mapCrypto {
+		for _, itemOuter := range cryptoList {
+			for _, itemInner := range cryptoList {
+				arb := CheckArbitage(itemInner, itemOuter)
+				listArb = append(listArb, arbStruct{"bid: " + itemInner.Name + ", ask:" + itemOuter.Name,itemOuter.Crypto,arb})
+			}
+		}
+	}
+
+	for _, item := range listArb {
+		if item.arb > ARB_RATIO {
+			//val, _ := strconv.ParseFloat(item.arb, 64)
+			val := strconv.FormatFloat(item.arb, 'f', -1, 64)
+			log.Println("ARBITAGE!!! on " + item.name + " at " + val)
+		}
+	}
+
+	//log.Println(listArb)
 
 	/*if DEBUG {
 		log.Println("got values from Crypto exchange")
@@ -233,8 +299,8 @@ func getStartData() []startData {
 			{"ACX_AUD_BTC", "https://acx.io:443/api/v2/tickers/btcaud.json", "AUD", "BTC"},
 			{"ACX_AUD_ETH", "https://acx.io:443/api/v2/tickers/ethaud.json", "AUD", "ETH"},
 			{"ACX_AUD_BCH","https://acx.io:443/api/v2/tickers/bchaud.json", "AUD", "BCH"},
-			{"ACX_AUD_XRP", "https://acx.io:443/api/v2/tickers/ltcaud.json", "AUD", "XRP"},
-			{"ACX_AUD_LTC","https://acx.io:443/api/v2/tickers/xrpaud.json","AUD", "LTC"}}},
+			{"ACX_AUD_LTC", "https://acx.io:443/api/v2/tickers/ltcaud.json", "AUD", "LTC"},
+			{"ACX_AUD_XRP","https://acx.io:443/api/v2/tickers/xrpaud.json","AUD", "XRP"}}},
 		startData{"Coinjar",[]Four{
 			{"Coinjar_AUD_BTC", "https://data.exchange.coinjar.com/products/BTCAUD/ticker", "AUD", "BTC"},
 			{"Coinjar_AUD_ETH", "https://data.exchange.coinjar.com/products/ETHAUD/ticker", "AUD", "ETH"},

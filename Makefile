@@ -25,3 +25,6 @@ list-container:
 
 run-container:
 	docker run crypto-container
+
+deploy:
+	deploy.sh

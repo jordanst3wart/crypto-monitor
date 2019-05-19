@@ -1,10 +1,10 @@
 FROM golang
-COPY . /tmp
-WORKDIR /tmp
-RUN go get && env GOOS=linux go build -ldflags="-s -w" -o bin/main main/main.go
+COPY . /go/src/crypto-monitor
+WORKDIR /go/src/crypto-monitor
+RUN env GOOS=linux go build -ldflags="-s -w" -o bin/main main/main.go
+# go get &&
 
 FROM scratch
 LABEL maintainer="Jordan Stewart <jordanstewart2428@gmail.com>"
-COPY --from=0 /tmp/bin/main /app/bin/main
-COPY --from=0 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-ENTRYPOINT [ "./app/bin/main" ]
+COPY --from=0 /go/src/crypto-monitor/bin/main /app/bin/main
+ENTRYPOINT [ "/app/bin/main" ]

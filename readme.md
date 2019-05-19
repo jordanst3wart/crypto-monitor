@@ -34,3 +34,19 @@ Purge old orders.
 
 harder: buy lower on Global exchange if global market is higher
 
+
+
+### instance
+
+
+ECR is free under 500MB
+
+t3.nano using docker containers
+
+
+### cron
+
+*/5 * * * * /home/ec2-user/main
+
+
+TODO should change log verbosity

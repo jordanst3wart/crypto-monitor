@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -170,9 +171,19 @@ func foo2(){
 
 func main() {
 	start := time.Now()
+	// log setup
+	f, err := os.OpenFile("server.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+
+	log.SetOutput(f) // if not local
+	log.Println("This is a test log entry")
+	// log setup finished
 
 	var ARB_RATIO float64
-	ARB_RATIO = 1.002
+	ARB_RATIO = 1.04
 	//DEBUG := true
 	chRates := make(chan ExchangeRates)
 	go currencyExchangeRates(chRates)

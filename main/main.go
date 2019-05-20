@@ -6,7 +6,6 @@ package main
 import (
 	"crypto-monitor/structs"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -111,7 +110,7 @@ func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate ExchangeRates) struc
 	case "AUD":
 		return crypto
 	default:
-		fmt.Printf("Unknown currency")
+		log.Println("Unknown currency")
 		return structs.CryptoDTO{}
 	}
 }
@@ -133,35 +132,35 @@ func UniqueStrings(input []string) []string {
 func calculate(data startData, ch chan structs.CryptoDTO) {
 	switch data.exchange {
 	case "CoinfloorTickerAndBitstamp":
-		fmt.Println("Requesting data from CoinfloorTickerAndBitstamp")
+		log.Println("Requesting data from CoinfloorTickerAndBitstamp")
 		var resseObjectCoinfloorAndBitstamp structs.CoinfloorTickerAndBitstamp
 		requestToExchange(resseObjectCoinfloorAndBitstamp, data.list, ch)
 	case "IndepentReserve":
-		fmt.Println("Requesting data from IndepentReserve")
+		log.Println("Requesting data from IndepentReserve")
 		var responseObjectIndependentReserve structs.IndepentReserve
 		requestToExchange(responseObjectIndependentReserve, data.list, ch)
 	case "GeminiTickerBTC":
-		fmt.Println("Requesting data from IndepentReserve")
+		log.Println("Requesting data from IndepentReserve")
 		var responseObjectGeminiBTC structs.GeminiTickerBTC
 		requestToExchange(responseObjectGeminiBTC, data.list, ch)
 	case "GeminiTickerETH":
-		fmt.Println("Requesting data from GeminiTickerETH")
+		log.Println("Requesting data from GeminiTickerETH")
 		var responseObjectGeminiETH structs.GeminiTickerETH
 		requestToExchange(responseObjectGeminiETH, data.list, ch)
 	case "BTCMarket":
-		fmt.Println("Requesting data from BTCMarket")
+		log.Println("Requesting data from BTCMarket")
 		var responseObjectBTC structs.BTCMarket
 		requestToExchange(responseObjectBTC, data.list, ch)
 	case "ACXTicker":
-		fmt.Println("Requesting data from ACX")
+		log.Println("Requesting data from ACX")
 		var responseObjectACX structs.ACXTicker
 		requestToExchange(responseObjectACX, data.list, ch)
 	case "Coinjar":
-		fmt.Println("Requesting data from Coinjar")
+		log.Println("Requesting data from Coinjar")
 		var responseObjectCoinjar structs.Coinjar
 		requestToExchange(responseObjectCoinjar, data.list, ch)
 	default:
-		fmt.Printf("Invalid key in startData")
+		log.Printf("Invalid key in startData")
 	}
 }
 
@@ -170,9 +169,8 @@ func foo2(){
 }
 
 func main() {
-	start := time.Now()
 	// log setup
-	f, err := os.OpenFile("server.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	f, err := os.OpenFile("server.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
@@ -182,99 +180,104 @@ func main() {
 	log.Println("This is a test log entry")
 	// log setup finished
 
-	var ARB_RATIO float64
-	ARB_RATIO = 1.04
-	//DEBUG := true
-	chRates := make(chan ExchangeRates)
-	go currencyExchangeRates(chRates)
-	ch := make(chan structs.CryptoDTO)
+	for {
+		start := time.Now()
 
-	startData := getStartData()
-	for _, elem := range startData {
-		calculate(elem, ch)
-	}
+		var ARB_RATIO float64
+		ARB_RATIO = 1.04
+		//DEBUG := true
+		chRates := make(chan ExchangeRates)
+		go currencyExchangeRates(chRates)
+		ch := make(chan structs.CryptoDTO)
 
-	fmt.Println("%.2fs elapsed\n", time.Since(start).Seconds())
-	val1:=<-chRates
-	if val1.err != nil {
-		log.Println(val1.err)
-	} else {
-		log.Println(val1)
-	}
+		startData := getStartData()
+		for _, elem := range startData {
+			calculate(elem, ch)
+		}
 
-	listThing := []structs.CryptoDTO{}
+		log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
+		val1 := <-chRates
+		if val1.err != nil {
+			log.Println(val1.err)
+		} else {
+			log.Println(val1)
+		}
 
-	for _, app := range startData {
-		for range app.list {
-			val:=<-ch
-			if val.Error != nil {
-				log.Println("Name:", val.Name, "Error", val.Error)
-			} else {
-				//log.Println(val)
-				tmpVal:=ConvertCurrency(val,val1)
-				listThing = append(listThing,tmpVal)
-				log.Println(tmpVal)
-				// TODO check for arbitage
-				// for each val go other each other val
-				//CheckArbitage()
-				// if greater than some margin send email
-				// standardise logging
+		listThing := []structs.CryptoDTO{}
+
+		for _, app := range startData {
+			for range app.list {
+				val := <-ch
+				if val.Error != nil {
+					log.Println("Name:", val.Name, "Error", val.Error)
+				} else {
+					//log.Println(val)
+					tmpVal := ConvertCurrency(val, val1)
+					listThing = append(listThing, tmpVal)
+					log.Println(tmpVal)
+					// TODO check for arbitage
+					// for each val go other each other val
+					//CheckArbitage()
+					// if greater than some margin send email
+					// standardise logging
+				}
 			}
 		}
-	}
 
-	// sort cryptos by crypto-currency
-	set := []string{}
-	for _, item := range listThing {
-		set = append(set,item.Crypto)
-	}
-	uniqueCryptos := UniqueStrings(set)
-	mapCrypto := map[string][]structs.CryptoDTO{}
-	for i := range uniqueCryptos {
-		listCrypto := []structs.CryptoDTO{}
+		// sort cryptos by crypto-currency
+		set := []string{}
 		for _, item := range listThing {
-			if item.Crypto == uniqueCryptos[i] {
-				listCrypto = append(listCrypto, item)
+			set = append(set, item.Crypto)
+		}
+		uniqueCryptos := UniqueStrings(set)
+		mapCrypto := map[string][]structs.CryptoDTO{}
+		for i := range uniqueCryptos {
+			listCrypto := []structs.CryptoDTO{}
+			for _, item := range listThing {
+				if item.Crypto == uniqueCryptos[i] {
+					listCrypto = append(listCrypto, item)
+				}
+			}
+			mapCrypto[uniqueCryptos[i]] = listCrypto
+		}
+
+		type arbStruct struct {
+			name, crypto string
+			arb          float64
+		}
+
+		listArb := []arbStruct{}
+		for _, cryptoList := range mapCrypto {
+			for _, itemOuter := range cryptoList {
+				for _, itemInner := range cryptoList {
+					arb := CheckArbitage(itemInner, itemOuter)
+					listArb = append(listArb, arbStruct{"bid: " + itemInner.Name + ", ask:" + itemOuter.Name, itemOuter.Crypto, arb})
+				}
 			}
 		}
-		mapCrypto[uniqueCryptos[i]] = listCrypto
-	}
 
-	type arbStruct struct {
-		name, crypto string
-		arb float64
-	}
-
-	listArb := []arbStruct{}
-	for _, cryptoList := range mapCrypto {
-		for _, itemOuter := range cryptoList {
-			for _, itemInner := range cryptoList {
-				arb := CheckArbitage(itemInner, itemOuter)
-				listArb = append(listArb, arbStruct{"bid: " + itemInner.Name + ", ask:" + itemOuter.Name,itemOuter.Crypto,arb})
+		for _, item := range listArb {
+			if item.arb > ARB_RATIO {
+				//val, _ := strconv.ParseFloat(item.arb, 64)
+				val := strconv.FormatFloat(item.arb, 'f', -1, 64)
+				log.Println("ARBITAGE!!! on " + item.name + " at " + val)
 			}
 		}
+
+		//log.Println(listArb)
+
+		/*if DEBUG {
+			log.Println("got values from Crypto exchange")
+			log.Println(groupList)
+		}*/
+		log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
+		// 14.40s and 8s elapsed before async
+		// 1.6s after async
+
+		// send email if arbitage found
+		// wait five minutes for next iteration
+		time.Sleep(time.Minute*5)
 	}
-
-	for _, item := range listArb {
-		if item.arb > ARB_RATIO {
-			//val, _ := strconv.ParseFloat(item.arb, 64)
-			val := strconv.FormatFloat(item.arb, 'f', -1, 64)
-			log.Println("ARBITAGE!!! on " + item.name + " at " + val)
-		}
-	}
-
-	//log.Println(listArb)
-
-	/*if DEBUG {
-		log.Println("got values from Crypto exchange")
-		log.Println(groupList)
-	}*/
-	fmt.Println("%.2fs elapsed\n", time.Since(start).Seconds())
-	// 14.40s and 8s elapsed before async
-	// 1.6s after async
-
-
-	// send email if arbitage found
 }
 
 

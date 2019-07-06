@@ -3,13 +3,13 @@
 build:
 	# env GOOS=linux go build -ldflags="-s -w" -o bin/hello hello/main.go
 	# env GOOS=linux go build -ldflags="-s -w" -o bin/world world/main.go
-	env GOOS=linux go build -ldflags="-s -w" -o bin/main main/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/main main/functions.go main/main.go
 
 clean:
 	rm -rf ./bin
 
 deploy: clean build
-	sls deploy --verbose
+	deploy.sh
 
 scratch:
 	env GOOS=linux go build -ldflags="-s -w" -o bin/scratch scratch/main.go
@@ -26,5 +26,3 @@ list-container:
 run-container:
 	docker run crypto-container
 
-deploy:
-	deploy.sh

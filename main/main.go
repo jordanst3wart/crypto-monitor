@@ -1,22 +1,16 @@
 package main
 
-
-// go run pokemon.go
-
 import (
 	"crypto-monitor/structs"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"time"
 )
 
-
 // TODO change interface to use float64 for numbers rather than strings
 // TODO simplify
 // TODO logrus ???
-
 
 func main() {
 	DEBUG := true
@@ -26,44 +20,42 @@ func main() {
 	} else {
 		f, err := os.OpenFile("server.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
-			log.Fatalln("error opening file: %v", err)
+			log.Fatalln("error opening file: ", err)
 		}
 		defer f.Close()
 		log.SetOutput(f) // if not local
 	}
 
-	log.Println("Starting log")
+	log.Println("Starting log...")
 	// log setup finished
 	var ARB_RATIO float64
 	ARB_RATIO = 1.02
-	chRates := make(chan ExchangeRates)
+	fiatRates := make(chan ExchangeRates)
 
 	// get exchange rates to start
-	go currencyExchangeRates(chRates)
-	msg := <-chRates
+	go fiatCurrencyExchangeRates(fiatRates)
+	msg := <-fiatRates
 	if msg.err != nil {
-		log.Println("Error: ", msg.err)
+		log.Println("Fiat exchange error: ", msg.err)
 	} else if DEBUG {
-		log.Println(msg.rates)
+		log.Println("Fiat rates: ", msg.rates)
 	}
 
 	for {
-		log.Println("msg", msg.rates)
 		start := time.Now()
 		log.Println("Starting iteration...")
 
 		//DEBUG := true
-		//chRates := make(chan ExchangeRates)
+		//fiatRates := make(chan ExchangeRates)
 		select {
-		case msg := <-chRates:
-			fmt.Println("received message", msg)
+		case msg := <-fiatRates:
 			if msg.err != nil {
-				log.Println("Error: ", msg.err)
+				log.Println("Fiat exchange error: ", msg.err)
 			} else if DEBUG {
-				log.Println(msg.rates)
+				log.Println("Fiat received message", msg)
 			}
 		default:
-			fmt.Println("no message received")
+			log.Println("No fiat message received.")
 		}
 
 		ch := make(chan structs.CryptoDTO)
@@ -73,7 +65,7 @@ func main() {
 			calculate(elem, ch)
 		}
 		if DEBUG {
-			log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
+			log.Println("elapsed time: ", time.Since(start).Seconds())
 		}
 
 		listThing := []structs.CryptoDTO{}
@@ -143,7 +135,7 @@ func main() {
 			log.Println(groupList)
 		}*/
 		if DEBUG {
-			log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
+			log.Println("elapsed time: ", time.Since(start).Seconds())
 		}
 		// 14.40s and 8s elapsed before async
 		// 1.6s after async

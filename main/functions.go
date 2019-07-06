@@ -13,7 +13,7 @@ import (
 	Gets exchange rate, every 5 minutes
 */
 
-func currencyExchangeRates(ch chan ExchangeRates) {
+func fiatCurrencyExchangeRates(ch chan ExchangeRates) {
 	exchangeMap := make(map[string]float64)
 	var responseObject structs.CurrencyExchangeAPI
 	// TODO need to cache
@@ -164,9 +164,9 @@ func calculate(data startData, ch chan structs.CryptoDTO) {
 
 func getStartData() []startData {
 	return []startData{{"CoinfloorTickerAndBitstamp", []Four{
-		{"Coinfloor_BTC", "https://webapi.coinfloor.co.uk:8090/bist/XBT/GBP/ticker/", "GBP", "BTC"},
-		{"Coinfloor_ETH","https://webapi.coinfloor.co.uk:8090/bist/ETH/GBP/ticker/", "GBP", "ETH"},
-		{"Coinfloor_BCH","https://webapi.coinfloor.co.uk:8090/bist/BCH/GBP/ticker/", "GBP", "BCH"},
+		{"Coinfloor_BTC", "https://webapi.coinfloor.co.uk/bist/XBT/GBP/ticker/", "GBP", "BTC"},
+		{"Coinfloor_ETH","https://webapi.coinfloor.co.uk/bist/ETH/GBP/ticker/", "GBP", "ETH"},
+		/*{"Coinfloor_BCH","https://webapi.coinfloor.co.uk/bist/BCH/GBP/ticker/", "GBP", "BCH"},  no longer supported */
 		{"Bitstamp_BTC","https://www.bitstamp.net/api/v2/ticker/btcusd/", "USD", "BTC"},
 		{"Bitstamp_XRP","https://www.bitstamp.net/api/v2/ticker/xrpusd/", "USD", "XRP"},
 		{"Bitstamp_LTC","https://www.bitstamp.net/api/v2/ticker/ltcusd/", "USD", "LTC"},

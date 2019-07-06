@@ -6,6 +6,7 @@ package main
 import (
 	"crypto-monitor/structs"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,31 +18,40 @@ import (
 
 // TODO change interface to use float64 for numbers rather than strings
 // TODO simplify
+// TODO logrus ???
 
+
+/*
+	Gets exchange rate, every 5 minutes
+ */
 func currencyExchangeRates(ch chan ExchangeRates) {
 	exchangeMap := make(map[string]float64)
-
-	resp, err := http.Get("https://api.exchangeratesapi.io/latest?base=USD")
-	if err != nil {
-		// should wrap error
-		ch <- ExchangeRates{nil, err}
-		return
-	}
-
-	responseData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		ch <- ExchangeRates{nil, err}
-		return
-	}
 	var responseObject structs.CurrencyExchangeAPI
-	err = json.Unmarshal(responseData, &responseObject)
-	if err != nil {
-		ch <- ExchangeRates{nil, err}
-		return
-	} else {
-		exchangeMap["USD2AUD"] = responseObject.Rates.AUD / responseObject.Rates.USD
-		exchangeMap["GBP2AUD"] = responseObject.Rates.AUD / responseObject.Rates.GDP
-		ch <-ExchangeRates{exchangeMap, err}
+	// TODO need to cache
+	for {
+		resp, err := http.Get("https://api.exchangeratesapi.io/latest?base=USD")
+		if err != nil {
+			// should wrap error
+			ch <- ExchangeRates{nil, err}
+			return
+		}
+		// https://fixer.io/product
+
+		responseData, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			ch <- ExchangeRates{nil, err}
+			return
+		}
+		err = json.Unmarshal(responseData, &responseObject)
+		if err != nil {
+			ch <- ExchangeRates{nil, err}
+			return
+		} else {
+			exchangeMap["USD2AUD"] = responseObject.Rates.AUD / responseObject.Rates.USD
+			exchangeMap["GBP2AUD"] = responseObject.Rates.AUD / responseObject.Rates.GDP
+			ch <- ExchangeRates{exchangeMap, err}
+		}
+		time.Sleep(5 * time.Minute)
 	}
 }
 
@@ -110,7 +120,7 @@ func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate ExchangeRates) struc
 	case "AUD":
 		return crypto
 	default:
-		log.Println("Unknown currency")
+		log.Println("Unknown currency trying to be converted")
 		return structs.CryptoDTO{}
 	}
 }
@@ -132,75 +142,94 @@ func UniqueStrings(input []string) []string {
 func calculate(data startData, ch chan structs.CryptoDTO) {
 	switch data.exchange {
 	case "CoinfloorTickerAndBitstamp":
-		log.Println("Requesting data from CoinfloorTickerAndBitstamp")
+		//log.Println("Requesting data from CoinfloorTickerAndBitstamp")
 		var resseObjectCoinfloorAndBitstamp structs.CoinfloorTickerAndBitstamp
 		requestToExchange(resseObjectCoinfloorAndBitstamp, data.list, ch)
 	case "IndepentReserve":
-		log.Println("Requesting data from IndepentReserve")
+		//log.Println("Requesting data from IndepentReserve")
 		var responseObjectIndependentReserve structs.IndepentReserve
 		requestToExchange(responseObjectIndependentReserve, data.list, ch)
 	case "GeminiTickerBTC":
-		log.Println("Requesting data from IndepentReserve")
+		//log.Println("Requesting data from IndepentReserve")
 		var responseObjectGeminiBTC structs.GeminiTickerBTC
 		requestToExchange(responseObjectGeminiBTC, data.list, ch)
 	case "GeminiTickerETH":
-		log.Println("Requesting data from GeminiTickerETH")
+		//log.Println("Requesting data from GeminiTickerETH")
 		var responseObjectGeminiETH structs.GeminiTickerETH
 		requestToExchange(responseObjectGeminiETH, data.list, ch)
 	case "BTCMarket":
-		log.Println("Requesting data from BTCMarket")
+		//log.Println("Requesting data from BTCMarket")
 		var responseObjectBTC structs.BTCMarket
 		requestToExchange(responseObjectBTC, data.list, ch)
 	case "ACXTicker":
-		log.Println("Requesting data from ACX")
+		//log.Println("Requesting data from ACX")
 		var responseObjectACX structs.ACXTicker
 		requestToExchange(responseObjectACX, data.list, ch)
 	case "Coinjar":
-		log.Println("Requesting data from Coinjar")
+		//log.Println("Requesting data from Coinjar")
 		var responseObjectCoinjar structs.Coinjar
 		requestToExchange(responseObjectCoinjar, data.list, ch)
 	default:
-		log.Printf("Invalid key in startData")
+		log.Println("Invalid key in startData")
 	}
-}
-
-func foo2(){
-
 }
 
 func main() {
+	DEBUG := true
 	// log setup
-	f, err := os.OpenFile("server.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("error opening file: %v", err)
+	if DEBUG {
+		log.SetOutput(os.Stdout)
+	} else {
+		f, err := os.OpenFile("server.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatalln("error opening file: %v", err)
+		}
+		defer f.Close()
+		log.SetOutput(f) // if not local
 	}
-	defer f.Close()
 
-	log.SetOutput(f) // if not local
-	log.Println("This is a test log entry")
+	log.Println("Starting log")
 	// log setup finished
+	var ARB_RATIO float64
+	ARB_RATIO = 1.02
+	chRates := make(chan ExchangeRates)
+
+	// get exchange rates to start
+	go currencyExchangeRates(chRates)
+	msg := <-chRates
+	if msg.err != nil {
+		log.Println("Error: ", msg.err)
+	} else if DEBUG {
+		log.Println(msg.rates)
+	}
 
 	for {
+		log.Println("msg", msg.rates)
 		start := time.Now()
+		log.Println("Starting iteration...")
 
-		var ARB_RATIO float64
-		ARB_RATIO = 1.04
 		//DEBUG := true
-		chRates := make(chan ExchangeRates)
-		go currencyExchangeRates(chRates)
+		//chRates := make(chan ExchangeRates)
+		select {
+		case msg := <-chRates:
+			fmt.Println("received message", msg)
+			if msg.err != nil {
+				log.Println("Error: ", msg.err)
+			} else if DEBUG {
+				log.Println(msg.rates)
+			}
+		default:
+			fmt.Println("no message received")
+		}
+
 		ch := make(chan structs.CryptoDTO)
 
 		startData := getStartData()
 		for _, elem := range startData {
 			calculate(elem, ch)
 		}
-
-		log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
-		val1 := <-chRates
-		if val1.err != nil {
-			log.Println(val1.err)
-		} else {
-			log.Println(val1)
+		if DEBUG {
+			log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
 		}
 
 		listThing := []structs.CryptoDTO{}
@@ -212,12 +241,11 @@ func main() {
 					log.Println("Name:", val.Name, "Error", val.Error)
 				} else {
 					//log.Println(val)
-					tmpVal := ConvertCurrency(val, val1)
+					tmpVal := ConvertCurrency(val, msg)
 					listThing = append(listThing, tmpVal)
-					log.Println(tmpVal)
-					// TODO check for arbitage
-					// for each val go other each other val
-					//CheckArbitage()
+					if DEBUG {
+						log.Println(tmpVal)
+					}
 					// if greater than some margin send email
 					// standardise logging
 				}
@@ -270,54 +298,15 @@ func main() {
 			log.Println("got values from Crypto exchange")
 			log.Println(groupList)
 		}*/
-		log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
+		if DEBUG {
+			log.Println("%.2fs elapsed\n", time.Since(start).Seconds())
+		}
 		// 14.40s and 8s elapsed before async
 		// 1.6s after async
 
 		// send email if arbitage found
 		// wait five minutes for next iteration
-		time.Sleep(time.Minute*5)
+		// biggest limit seen is 1 call per second
+		time.Sleep(time.Second*100)
 	}
-}
-
-
-
-
-func getStartData() []startData {
-	return []startData{{"CoinfloorTickerAndBitstamp", []Four{
-		{"Coinfloor_BTC", "https://webapi.coinfloor.co.uk:8090/bist/XBT/GBP/ticker/", "GBP", "BTC"},
-		{"Coinfloor_ETH","https://webapi.coinfloor.co.uk:8090/bist/ETH/GBP/ticker/", "GBP", "ETH"},
-		{"Coinfloor_BCH","https://webapi.coinfloor.co.uk:8090/bist/BCH/GBP/ticker/", "GBP", "BCH"},
-		{"Bitstamp_BTC","https://www.bitstamp.net/api/v2/ticker/btcusd/", "USD", "BTC"},
-		{"Bitstamp_XRP","https://www.bitstamp.net/api/v2/ticker/xrpusd/", "USD", "XRP"},
-		{"Bitstamp_LTC","https://www.bitstamp.net/api/v2/ticker/ltcusd/", "USD", "LTC"},
-		{"Bitstamp_ETH","https://www.bitstamp.net/api/v2/ticker/ethusd/", "USD", "ETH"},
-		{"Bitstamp_BCH","https://www.bitstamp.net/api/v2/ticker/bchusd/", "USD", "BCH"}}},
-		startData{"IndepentReserve",[]Four{
-			{"IndependentReserve_BTC", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", "AUD","BTC"},
-			{"IndependentReserve_ETH","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=eth&secondaryCurrencyCode=aud", "AUD", "ETH"},
-			{"IndependentReserve_BCH","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=bch&secondaryCurrencyCode=aud", "AUD", "BCH"},
-			{"IndependentReserve_XRP","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xrp&secondaryCurrencyCode=aud", "AUD", "XRP"},
-			{"IndependentReserve_LTC","https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=ltc&secondaryCurrencyCode=aud", "AUD", "LTC"}}},
-		startData{"GeminiTickerBTC", []Four{
-			{"GEMINI_BTC", "https://api.gemini.com/v1/pubticker/btcusd", "USD", "BTC"}}},
-		startData{"GeminiTickerETH",[]Four{
-			{"GEMINI_ETH", "https://api.gemini.com/v1/pubticker/ethusd", "USD", "ETH"}}},
-		startData{"BTCMarket", []Four{
-			{"BTCMarket_AUD_BTC", "https://api.btcmarkets.net/market/BTC/AUD/tick", "AUD", "BTC"},
-			{"BTCMarket_AUD_ETH", "https://api.btcmarkets.net/market/ETH/AUD/tick", "AUD", "ETH"},
-			{"BTCMarket_AUD_BCH","https://api.btcmarkets.net/market/BCHABC/AUD/tick", "AUD", "BCH"},
-			{"BTCMarket_AUD_XRP", "https://api.btcmarkets.net/market/XRP/AUD/tick", "AUD", "XRP"},
-			{"BTCMarket_AUD_LTC","https://api.btcmarkets.net/market/LTC/AUD/tick", "AUD", "LTC"}}},
-		startData{"ACXTicker",[]Four{
-			{"ACX_AUD_BTC", "https://acx.io:443/api/v2/tickers/btcaud.json", "AUD", "BTC"},
-			{"ACX_AUD_ETH", "https://acx.io:443/api/v2/tickers/ethaud.json", "AUD", "ETH"},
-			{"ACX_AUD_BCH","https://acx.io:443/api/v2/tickers/bchaud.json", "AUD", "BCH"},
-			{"ACX_AUD_LTC", "https://acx.io:443/api/v2/tickers/ltcaud.json", "AUD", "LTC"},
-			{"ACX_AUD_XRP","https://acx.io:443/api/v2/tickers/xrpaud.json","AUD", "XRP"}}},
-		startData{"Coinjar",[]Four{
-			{"Coinjar_AUD_BTC", "https://data.exchange.coinjar.com/products/BTCAUD/ticker", "AUD", "BTC"},
-			{"Coinjar_AUD_ETH", "https://data.exchange.coinjar.com/products/ETHAUD/ticker", "AUD", "ETH"},
-			{"Coinjar_AUD_XRP","https://data.exchange.coinjar.com/products/XRPAUD/ticker","AUD", "XRP"},
-			{"Coinjar_AUD_LTC", "https://data.exchange.coinjar.com/products/LTCAUD/ticker", "AUD", "LTC"}}}}
 }

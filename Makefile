@@ -15,7 +15,7 @@ scratch:
 	env GOOS=linux go build -ldflags="-s -w" -o bin/scratch scratch/main.go
 
 trial:
-	go run main/main.go
+	go run main/functions.go main/main.go
 
 build-container:
 	docker build -t crypto-container .

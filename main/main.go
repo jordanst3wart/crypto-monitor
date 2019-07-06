@@ -13,7 +13,7 @@ import (
 // TODO logrus ???
 
 func main() {
-	DEBUG := true
+	DEBUG := false
 	// log setup
 	if DEBUG {
 		log.SetOutput(os.Stdout)
@@ -29,7 +29,7 @@ func main() {
 	log.Println("Starting log...")
 	// log setup finished
 	var ARB_RATIO float64
-	ARB_RATIO = 1.02
+	ARB_RATIO = 1.01
 	fiatRates := make(chan ExchangeRates)
 
 	// get exchange rates to start

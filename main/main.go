@@ -13,6 +13,7 @@ import (
 // TODO logrus ???
 
 func main() {
+	// TODO setup reading from config file
 	DEBUG := false
 	// log setup
 	if DEBUG {

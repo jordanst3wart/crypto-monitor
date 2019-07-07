@@ -43,7 +43,9 @@ func main() {
 
 	for {
 		start := time.Now()
-		log.Println("Starting iteration...")
+		if DEBUG {
+			log.Println("Starting iteration...")
+		}
 
 		//DEBUG := true
 		//fiatRates := make(chan ExchangeRates)
@@ -55,7 +57,9 @@ func main() {
 				log.Println("Fiat received message", msg)
 			}
 		default:
-			log.Println("No fiat message received.")
+			if DEBUG {
+				log.Println("No fiat message received.")
+			}
 		}
 
 		ch := make(chan structs.CryptoDTO)
@@ -74,7 +78,7 @@ func main() {
 			for range app.list {
 				val := <-ch
 				if val.Error != nil {
-					log.Println("Name:", val.Name, "Error", val.Error)
+					log.Println("Name:", val.Name, "Error", val.Error, "Coin", val.Coin)
 				} else {
 					//log.Println(val)
 					tmpVal := ConvertCurrency(val, msg)
@@ -124,7 +128,7 @@ func main() {
 			if item.arb > ARB_RATIO {
 				//val, _ := strconv.ParseFloat(item.arb, 64)
 				val := strconv.FormatFloat(item.arb, 'f', -1, 64)
-				log.Println("ARBITAGE!!! on " + item.name + " at " + val)
+				log.Println("ARBITRAGE!!! on " + item.name + " at " + val)
 			}
 		}
 

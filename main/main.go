@@ -8,12 +8,11 @@ import (
 	"time"
 )
 
-// TODO change interface to use float64 for numbers rather than strings
-// TODO simplify
-// TODO logrus ???
-// TODO write tests
 
-// TODO log amount of volume is available to buy/sell
+// TODO Use orders to determine the volume of available & log amount of volume is available to buy/sell
+// TODO logrus to have better debug logic
+// TODO write tests
+// TODO use config file
 
 func main() {
 	// TODO setup reading from config file

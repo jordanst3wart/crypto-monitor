@@ -11,6 +11,9 @@ import (
 // TODO change interface to use float64 for numbers rather than strings
 // TODO simplify
 // TODO logrus ???
+// TODO write tests
+
+// TODO log amount of volume is available to buy/sell
 
 func main() {
 	// TODO setup reading from config file
@@ -30,7 +33,7 @@ func main() {
 	log.Println("Starting log...")
 	// log setup finished
 	var ARB_RATIO float64
-	ARB_RATIO = 1.01
+	ARB_RATIO = 1.02
 	fiatRates := make(chan ExchangeRates)
 
 	// get exchange rates to start

@@ -1,24 +1,34 @@
-# https://medium.com/@chemidy/create-the-smallest-and-secured-golang-docker-image-based-on-scratch-4752223b7324
-FROM golang:alpine as builder
-WORKDIR /go/src/crypto-monitor
-COPY . .
-LABEL maintainer="Jordan Stewart <jordanstewart2428@gmail.com>"
-# Install git.
-# Git is required for fetching the dependencies.
-# https://stackoverflow.com/questions/28031603/what-do-three-dots-mean-in-go-command-line-invocations
-# Create appuser
-RUN apk update && apk add --no-cache git && \
-    go get -d -v ./... && \
-    env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /go/bin/main main/main.go && \
-    adduser -D -g '' appuser
+FROM golang:1.13.7-alpine3.11 as builder
 
-#FROM scratch
-FROM golang
-#COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+ENV USER=appuser
+ENV UID=10001
+
+# See https://stackoverflow.com/a/55757473/12429735
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
+WORKDIR $GOPATH/src/crypto-monitor
+COPY . .
+
+RUN cd main && apk update && apk add --no-cache git ca-certificates tzdata && update-ca-certificates && \
+    go get -d -v
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+      -ldflags='-w -s -extldflags "-static"' -a \
+      -o /go/bin/main main/functions.go  main/main.go
+
+FROM scratch
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
 COPY --from=builder /go/bin/main /go/bin/main
-# USER appuser
-#CMD [ "ls && /go/bin/main" ]
-#CMD [ "sleep infinity" ]
-CMD pwd && ls /go/bin/main
-#CMD /go/bin/main
+USER appuser:appuser
+
+# Run the hello binary.
+ENTRYPOINT ["/go/bin/main"]

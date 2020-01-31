@@ -1,5 +1,9 @@
 
 # Setup
+Install go version 13, or latest.
+See here:
+https://golang.org/doc/install
+
 See Makefile
 
 Did stuff through this:

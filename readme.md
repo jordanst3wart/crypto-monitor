@@ -1,3 +1,8 @@
+# TODO
+I need to change the logging behaviour
+```
+docker run --log-opt mode=non-blocking --log-opt max-buffer-size=4m $container
+```
 
 # Setup
 Install go version 13, or latest.

@@ -18,16 +18,7 @@ func main() {
 	// TODO setup reading from config file
 	DEBUG := false
 	// log setup
-	if DEBUG {
-		log.SetOutput(os.Stdout)
-	} else {
-		f, err := os.OpenFile("server.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		if err != nil {
-			log.Fatalln("error opening file: ", err)
-		}
-		defer f.Close()
-		log.SetOutput(f) // if not local
-	}
+	log.SetOutput(os.Stdout)
 
 	log.Println("Starting log...")
 	// log setup finished

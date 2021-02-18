@@ -76,3 +76,6 @@ Errors getting:
 2019/07/07 08:18:23 Name: Bitstamp_BTC Error unexpected EOF
 2019/07/07 09:43:42 Name: Bitstamp_ETH Error unexpected EOF
 ```
+
+
+https://github.com/golang-standards/project-layout

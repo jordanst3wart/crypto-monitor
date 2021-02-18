@@ -11,9 +11,6 @@ clean:
 deploy: clean build
 	deploy.sh
 
-scratch:
-	env GOOS=linux go build -ldflags="-s -w" -o bin/scratch scratch/main.go
-
 trial:
 	go run main/functions.go main/main.go
 
@@ -26,3 +23,5 @@ list-container:
 run-container:
 	docker run crypto-container
 
+test:
+	env GOOS=linux go test -ldflags="-s -w"

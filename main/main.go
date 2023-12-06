@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-
 // TODO Use orders to determine the volume of available & log amount of volume is available to buy/sell
 // TODO logrus to have better debug logic
 // TODO write tests
@@ -27,7 +26,7 @@ func main() {
 	fiatRates := make(chan ExchangeRates)
 
 	// get exchange rates to start
-	go fiatCurrencyExchangeRates(fiatRates)
+	go fiatCurrencyExchangeRates(fiatRates, 60*time.Minute, RealExchangeClient{})
 	msg := <-fiatRates
 	if msg.err != nil {
 		log.Println("Fiat exchange error: ", msg.err)
@@ -141,6 +140,6 @@ func main() {
 		// send email if arbitage found
 		// wait five minutes for next iteration
 		// biggest limit seen is 1 call per second
-		time.Sleep(time.Second*100)
+		time.Sleep(time.Second * 100)
 	}
 }

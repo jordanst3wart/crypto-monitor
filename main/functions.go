@@ -121,10 +121,15 @@ func calculate(data startData, ch chan structs.CryptoDTO) {
 // cointree
 // coinspot
 
+// https://webapi.coinfloor.co.uk/bist/XBT/GBP/ticker/
+// https://webapi.coinfloor.co.uk/bist/XBT/GBP/ticker/
+// https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP
+// https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP
+
 func getStartData() []startData {
 	return []startData{{"CoinfloorTickerAndBitstamp", []Four{
-		{"Coinfloor_BTC", "https://webapi.coinfloor.co.uk/bist/XBT/GBP/ticker/", "GBP", "BTC"},
-		{"Coinfloor_ETH", "https://webapi.coinfloor.co.uk/bist/ETH/GBP/ticker/", "GBP", "ETH"},
+		{"CoinCorner_BTC", "https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP", "GBP", "BTC"},
+		{"CoinCorner_ETH", "https://api.coincorner.com/api/Ticker?Coin=ETH&Currency=GBP", "GBP", "ETH"},
 		/*{"Coinfloor_BCH","https://webapi.coinfloor.co.uk/bist/BCH/GBP/ticker/", "GBP", "BCH"},  no longer supported */
 		{"Bitstamp_BTC", "https://www.bitstamp.net/api/v2/ticker/btcusd/", "USD", "BTC"},
 		{"Bitstamp_XRP", "https://www.bitstamp.net/api/v2/ticker/xrpusd/", "USD", "XRP"},
@@ -147,12 +152,6 @@ func getStartData() []startData {
 			{"BTCMarket_AUD_BCH", "https://api.btcmarkets.net/market/BCHABC/AUD/tick", "AUD", "BCH"},
 			{"BTCMarket_AUD_XRP", "https://api.btcmarkets.net/market/XRP/AUD/tick", "AUD", "XRP"},
 			{"BTCMarket_AUD_LTC", "https://api.btcmarkets.net/market/LTC/AUD/tick", "AUD", "LTC"}}},
-		startData{"ACXTicker", []Four{
-			{"ACX_AUD_BTC", "https://acx.io:443/api/v2/tickers/btcaud.json", "AUD", "BTC"},
-			{"ACX_AUD_ETH", "https://acx.io:443/api/v2/tickers/ethaud.json", "AUD", "ETH"},
-			{"ACX_AUD_BCH", "https://acx.io:443/api/v2/tickers/bchaud.json", "AUD", "BCH"},
-			{"ACX_AUD_LTC", "https://acx.io:443/api/v2/tickers/ltcaud.json", "AUD", "LTC"},
-			{"ACX_AUD_XRP", "https://acx.io:443/api/v2/tickers/xrpaud.json", "AUD", "XRP"}}},
 		startData{"Coinjar", []Four{
 			{"Coinjar_AUD_BTC", "https://data.exchange.coinjar.com/products/BTCAUD/ticker", "AUD", "BTC"},
 			{"Coinjar_AUD_ETH", "https://data.exchange.coinjar.com/products/ETHAUD/ticker", "AUD", "ETH"},

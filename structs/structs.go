@@ -2,6 +2,7 @@ package structs
 
 import (
 	"encoding/json"
+	"fmt"
 	errors "github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
@@ -123,15 +124,24 @@ type Coinjar struct {
 
 // TODO put logic in here for RequestUpdate to reduce repeating code
 func requestWrapper(url string) ([]byte, error) {
+	var responseData []byte
+
 	resp, err := http.Get(url)
 	if err != nil {
-		err = errors.Wrap(err, " get request failed")
+		return responseData, errors.Wrap(err, "get request failed for URL: "+url)
 	}
-	responseData, err2 := ioutil.ReadAll(resp.Body)
-	if err2 != nil {
-		err = errors.Wrap(err, err2.Error()+"response data is: "+string(responseData))
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return responseData, fmt.Errorf("non-OK HTTP status received for URL %s: %d", url, resp.StatusCode)
 	}
-	return responseData, err
+
+	responseData, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return responseData, errors.Wrap(err, "error reading response data for URL: "+url)
+	}
+
+	return responseData, nil
 }
 
 func (b BTCMarket) VolumeFloat() (float64, error) {

@@ -57,15 +57,15 @@ func TestFiatCurrencyExchangeRates(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ch := make(chan ExchangeRates)
-			go fiatCurrencyExchangeRates(ch, time.Second, tc.client)
+			go FiatCurrencyExchangeRates(ch, time.Second, tc.client)
 
 			select {
 			case result := <-ch:
-				if tc.expectedError && result.err == nil {
+				if tc.expectedError && result.Err == nil {
 					t.Errorf("Expected an error but didn't get one")
 				}
-				if !tc.expectedError && result.err != nil {
-					t.Errorf("Did not expect an error but got one: %v", result.err)
+				if !tc.expectedError && result.Err != nil {
+					t.Errorf("Did not expect an error but got one: %v", result.Err)
 				}
 				// ... additional assertions ...
 			case <-time.After(2 * time.Second):
@@ -92,12 +92,12 @@ func TestFiatCurrencyExchangeRatesDataPayload(t *testing.T) {
 	}
 
 	ch := make(chan ExchangeRates)
-	go fiatCurrencyExchangeRates(ch, time.Second, client)
+	go FiatCurrencyExchangeRates(ch, time.Second, client)
 
 	select {
 	case result := <-ch:
-		if result.err != nil {
-			t.Errorf("Did not expect an error but got one: %v", result.err)
+		if result.Err != nil {
+			t.Errorf("Did not expect an error but got one: %v", result.Err)
 		}
 
 		// Check if the data payload is correct

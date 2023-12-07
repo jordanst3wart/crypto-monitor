@@ -9,12 +9,12 @@ func TestFiatCurrencyExchangeRatesDataPayloadInt(t *testing.T) {
 	client := &RealExchangeClient{}
 
 	ch := make(chan ExchangeRates)
-	go fiatCurrencyExchangeRates(ch, 10*time.Second, client)
+	go FiatCurrencyExchangeRates(ch, 10*time.Second, client)
 
 	select {
 	case result := <-ch:
-		if result.err != nil {
-			t.Errorf("Did not expect an error but got one, server could be down: %v", result.err)
+		if result.Err != nil {
+			t.Errorf("Did not expect an error but got one, server could be down: %v", result.Err)
 		}
 
 		// Check if the data payload is coming through

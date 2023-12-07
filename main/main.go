@@ -27,12 +27,12 @@ func main() {
 	fiatRates := make(chan fiatCurrencyExchange.ExchangeRates)
 
 	// get exchange rates to start
-	go fiatCurrencyExchange.fiatCurrencyExchangeRates(fiatRates, 60*time.Minute, fiatCurrencyExchange.RealExchangeClient{})
+	go fiatCurrencyExchange.FiatCurrencyExchangeRates(fiatRates, 60*time.Minute, fiatCurrencyExchange.RealExchangeClient{})
 	msg := <-fiatRates
-	if msg.err != nil {
-		log.Println("Fiat exchange error: ", msg.err)
+	if msg.Err != nil {
+		log.Println("Fiat exchange error: ", msg.Err)
 	} else if DEBUG {
-		log.Println("Fiat rates: ", msg.rates)
+		log.Println("Fiat rates: ", msg.Rates)
 	}
 
 	for {
@@ -45,8 +45,8 @@ func main() {
 		//fiatRates := make(chan ExchangeRates)
 		select {
 		case msg := <-fiatRates:
-			if msg.err != nil {
-				log.Println("Fiat exchange error: ", msg.err)
+			if msg.Err != nil {
+				log.Println("Fiat exchange error: ", msg.Err)
 			} else if DEBUG {
 				log.Println("Fiat received message", msg)
 			}

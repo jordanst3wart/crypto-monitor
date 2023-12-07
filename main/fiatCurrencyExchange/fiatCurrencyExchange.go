@@ -25,7 +25,7 @@ func (e MockErrorExchangeClient) getRates() (resp *http.Response, err error) {
 
 type ExchangeRates struct {
 	Rates map[string]float64
-	err   error
+	Err   error
 }
 
 /*func (e MockExchangeClient) getRates() (resp *http.Response, err error) {
@@ -47,7 +47,7 @@ func (e RealExchangeClient) getRates() (resp *http.Response, err error) {
 	Gets exchange rate, every 5 minutes
 */
 
-func fiatCurrencyExchangeRates(ch chan ExchangeRates, updateFrequency time.Duration, client ExchangeClient) {
+func FiatCurrencyExchangeRates(ch chan ExchangeRates, updateFrequency time.Duration, client ExchangeClient) {
 	exchangeMap := make(map[string]float64)
 	var responseObject structs.CurrencyExchangeAPI
 	// TODO need to cache

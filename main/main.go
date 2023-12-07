@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto-monitor/main/fiatCurrencyExchange"
 	"crypto-monitor/structs"
 	"log"
 	"os"
@@ -23,10 +24,10 @@ func main() {
 	// log setup finished
 	var ARB_RATIO float64
 	ARB_RATIO = 1.02
-	fiatRates := make(chan ExchangeRates)
+	fiatRates := make(chan fiatCurrencyExchange.ExchangeRates)
 
 	// get exchange rates to start
-	go fiatCurrencyExchangeRates(fiatRates, 60*time.Minute, RealExchangeClient{})
+	go fiatCurrencyExchange.fiatCurrencyExchangeRates(fiatRates, 60*time.Minute, fiatCurrencyExchange.RealExchangeClient{})
 	msg := <-fiatRates
 	if msg.err != nil {
 		log.Println("Fiat exchange error: ", msg.err)

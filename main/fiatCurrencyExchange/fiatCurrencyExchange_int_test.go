@@ -1,4 +1,4 @@
-package main
+package fiatCurrencyExchange
 
 import (
 	"testing"
@@ -18,13 +18,13 @@ func TestFiatCurrencyExchangeRatesDataPayloadInt(t *testing.T) {
 		}
 
 		// Check if the data payload is coming through
-		if result.rates["USD2AUD"] <= 0.1 && result.rates["USD2AUD"] >= 3 {
-			t.Errorf("Expected USD2AUD rate outside of range could be an error got %v", result.rates["USD2AUD"])
+		if result.Rates["USD2AUD"] <= 0.1 && result.Rates["USD2AUD"] >= 3 {
+			t.Errorf("Expected USD2AUD rate outside of range could be an error got %v", result.Rates["USD2AUD"])
 		}
-		if result.rates["GBP2AUD"] <= 0.1 && result.rates["GBP2AUD"] >= 3 {
-			t.Errorf("Expected GBP2AUD rate outside of range could be an error got %v", result.rates["GBP2AUD"])
+		if result.Rates["GBP2AUD"] <= 0.1 && result.Rates["GBP2AUD"] >= 3 {
+			t.Errorf("Expected GBP2AUD rate outside of range could be an error got %v", result.Rates["GBP2AUD"])
 		}
-		t.Logf("Got USD2AUD rate %v and GBP2AUD rate %v", result.rates["USD2AUD"], result.rates["GBP2AUD"])
+		t.Logf("Got USD2AUD rate %v and GBP2AUD rate %v", result.Rates["USD2AUD"], result.Rates["GBP2AUD"])
 	case <-time.After(20 * time.Second):
 		t.Errorf("Test timed out")
 	}

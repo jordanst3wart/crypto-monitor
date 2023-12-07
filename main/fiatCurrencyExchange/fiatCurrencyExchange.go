@@ -1,4 +1,4 @@
-package main
+package fiatCurrencyExchange
 
 import (
 	"crypto-monitor/structs"
@@ -24,7 +24,7 @@ func (e MockErrorExchangeClient) getRates() (resp *http.Response, err error) {
 }
 
 type ExchangeRates struct {
-	rates map[string]float64
+	Rates map[string]float64
 	err   error
 }
 

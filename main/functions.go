@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto-monitor/main/fiatCurrencyExchange"
 	"crypto-monitor/structs"
 	"log"
 )
@@ -55,12 +56,12 @@ func CheckArbitage(exchange1 structs.CryptoDTO, exchange2 structs.CryptoDTO) flo
 	return bid / ask
 }
 
-func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate ExchangeRates) structs.CryptoDTO {
+func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate fiatCurrencyExchange.ExchangeRates) structs.CryptoDTO {
 	switch crypto.Currency {
 	case "USD":
-		return convertHelper(exchangeRate.rates["USD2AUD"], crypto)
+		return convertHelper(exchangeRate.Rates["USD2AUD"], crypto)
 	case "GBP":
-		return convertHelper(exchangeRate.rates["GBP2AUD"], crypto)
+		return convertHelper(exchangeRate.Rates["GBP2AUD"], crypto)
 	case "AUD":
 		return crypto
 	default:

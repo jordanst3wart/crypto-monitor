@@ -5,7 +5,7 @@ docker run --log-opt mode=non-blocking --log-opt max-buffer-size=4m $container
 ```
 
 # Setup
-Install go version 13, or latest.
+Install go version 18, or latest. 
 See here:
 https://golang.org/doc/install
 
@@ -87,3 +87,5 @@ Latest errors:
 2023/12/07 19:08:17 ARBITRAGE!!! on bid: IndependentReserve_BCH, ask:BTCMarket_AUD_BCH at +Inf
 2023/12/07 19:08:17 ARBITRAGE!!! on bid: Bitstamp_BCH, ask:BTCMarket_AUD_BCH at +Inf
 ```
+
+TODO remove `require github.com/pkg/errors v0.9.1`

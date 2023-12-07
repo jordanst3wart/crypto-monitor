@@ -16,8 +16,6 @@ type ExchangeClient interface {
 
 type MockErrorExchangeClient struct{}
 
-//type MockExchangeClient struct{}
-
 type RealExchangeClient struct{}
 
 func (e MockErrorExchangeClient) getRates() (resp *http.Response, err error) {

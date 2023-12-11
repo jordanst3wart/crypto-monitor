@@ -128,5 +128,5 @@ This errors as well:
 
 Check for arbitrage with:
 ```sh
-cat main.log | grep ARBITRAGE | grep -v Inf
+cat /home/ec2-user/crypto-monitor/bin/main.log | grep ARBITRAGE | grep -v Inf
 ```

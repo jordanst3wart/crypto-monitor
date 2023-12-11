@@ -17,13 +17,12 @@ import (
 func main() {
 	// TODO setup reading from config file
 	DEBUG := false
+	ARB_RATIO := 1.01
+
 	// log setup
 	log.SetOutput(os.Stdout)
-
 	log.Println("Starting log...")
-	// log setup finished
-	var ARB_RATIO float64
-	ARB_RATIO = 1.02
+
 	fiatRates := make(chan fiatCurrencyExchange.ExchangeRates)
 
 	// get exchange rates to start
@@ -41,8 +40,6 @@ func main() {
 			log.Println("Starting iteration...")
 		}
 
-		//DEBUG := true
-		//fiatRates := make(chan ExchangeRates)
 		select {
 		case msg := <-fiatRates:
 			if msg.Err != nil {

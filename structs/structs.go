@@ -3,7 +3,6 @@ package structs
 import (
 	"encoding/json"
 	"fmt"
-	errors "github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -128,7 +127,7 @@ func requestWrapper(url string) ([]byte, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return responseData, errors.Wrap(err, "get request failed for URL: "+url)
+		return responseData, fmt.Errorf("get request failed for URL: %s, error: %w ", url, err)
 	}
 	defer resp.Body.Close()
 
@@ -138,7 +137,7 @@ func requestWrapper(url string) ([]byte, error) {
 
 	responseData, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return responseData, errors.Wrap(err, "error reading response data for URL: "+url)
+		return responseData, fmt.Errorf("error reading response data for URL: %s, error: %d", url, err)
 	}
 
 	return responseData, nil

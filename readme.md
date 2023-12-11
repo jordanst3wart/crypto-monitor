@@ -88,4 +88,45 @@ Latest errors:
 2023/12/07 19:08:17 ARBITRAGE!!! on bid: Bitstamp_BCH, ask:BTCMarket_AUD_BCH at +Inf
 ```
 
-TODO remove `require github.com/pkg/errors v0.9.1`
+
+docker image a tar file
+```sh
+docker build -t crypto:latest .
+docker save crypto:latest > crypto-monitor-container.tar
+```
+
+On server (scp server):
+```sh
+docker load < /path/to/destination/crypto-monitor-container.tar
+```
+Need to output logs somehow...
+
+
+# deploy
+
+ssh
+```sh
+ssh -i ~/.ssh/python-watch-key.pem ec2-user@13.239.8.107
+```
+
+
+```sh
+scp -i ~/.ssh/python-watch-key.pem -r bin ec2-user@13.239.8.107:/home/ec2-user/crypto-monitor
+```
+
+run with no hanging up, logging and in the background:
+```sh
+nohup /home/ec2-user/crypto-monitor/bin/main >> /home/ec2-user/crypto-monitor/bin/main.log 2>&1 &
+```
+
+
+ask:BTCMarket_AUD_BCH seems to be zero and result in +Int when dividing
+This errors as well:
+2023/12/10 04:45:33 Name: CoinCorner_ETH Error json: cannot unmarshal number into Go struct field CoinfloorTickerAndBitstamp.volume of type string Coin {      }
+2023/12/10 04:45:33 Name: CoinCorner_BTC Error json: cannot unmarshal number into Go struct field CoinfloorTickerAndBitstamp.volume of type string Coin {      }
+
+
+Check for arbitrage with:
+```sh
+cat main.log | grep ARBITRAGE | grep -v Inf
+```

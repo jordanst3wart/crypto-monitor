@@ -34,7 +34,7 @@ func (e RealExchangeClient) getRates() (resp *http.Response, err error) {
 	Gets exchange rate, every 5 minutes
 */
 
-func FiatCurrencyExchangeRates(ch chan ExchangeRates, updateFrequency time.Duration, client ExchangeClient) {
+func FiatExchangeRatesRoutine(ch chan ExchangeRates, updateFrequency time.Duration, client ExchangeClient) {
 	exchangeMap := make(map[string]float64)
 	var responseObject CryptoExchanges.CurrencyExchangeAPI
 	for {

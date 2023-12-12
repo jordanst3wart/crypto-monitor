@@ -9,7 +9,7 @@ func TestFiatCurrencyExchangeRatesDataPayloadInt(t *testing.T) {
 	client := &RealExchangeClient{}
 
 	ch := make(chan ExchangeRates)
-	go FiatCurrencyExchangeRates(ch, 10*time.Second, client)
+	go FiatExchangeRatesRoutine(ch, 10*time.Second, client)
 
 	select {
 	case result := <-ch:

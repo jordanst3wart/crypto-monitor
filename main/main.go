@@ -24,20 +24,20 @@ func main() {
 	fiatRatesChannel := make(chan fiatCurrencyExchange.ExchangeRates)
 
 	// get exchange rates to start
-	go fiatCurrencyExchange.FiatCurrencyExchangeRates(fiatRatesChannel, 60*time.Minute, fiatCurrencyExchange.RealExchangeClient{})
+	go fiatCurrencyExchange.FiatExchangeRatesRoutine(fiatRatesChannel, 60*time.Minute, fiatCurrencyExchange.RealExchangeClient{})
 	fiatMsg := <-fiatRatesChannel
 	if fiatMsg.Err != nil {
-		log.Printf("Fiat exchange error: %v \n", fiatMsg.Err)
+		log.Fatalf("Fiat exchange error on start up: %v \n", fiatMsg.Err)
 	}
 
 	for {
 		select {
-		case msg := <-fiatRatesChannel:
-			if msg.Err != nil {
-				log.Printf("Fiat exchange error: %v \n", msg.Err)
+		case fiatRateMsg := <-fiatRatesChannel:
+			if fiatRateMsg.Err != nil {
+				log.Printf("Fiat exchange error: %v \n", fiatRateMsg.Err)
+			} else {
+				fiatMsg = fiatRateMsg
 			}
-		default:
-			log.Println("No fiat exchange rate message received...")
 		}
 
 		// fiatMsg = <-fiatRatesChannel
@@ -48,30 +48,28 @@ func main() {
 			exchangeMutex(elem, cryptoExchangeChannel)
 		}
 
-		var cryptoExchangeData []CryptoExchanges.CryptoData
-
-		for _, app := range exchangeDataList {
-			for range app.list {
-				val := <-cryptoExchangeChannel
-				if val.Error != nil {
-					log.Printf("Name: %s, Error: %v, Coin: %v\n", val.Name, val.Error, val.Coin)
+		var aggregatedCryptoData []CryptoExchanges.CryptoData
+		for _, exchangeApp := range exchangeDataList {
+			for range exchangeApp.cryptoList {
+				cryptoData := <-cryptoExchangeChannel
+				if cryptoData.Error != nil {
+					log.Printf("Exchange App: %s, Error: %v, Coin: %v\n", cryptoData.Name, cryptoData.Error, cryptoData.Coin)
 				} else {
-					tmpVal := ConvertCurrency(val, fiatMsg) // TODO this is wrong
-					cryptoExchangeData = append(cryptoExchangeData, tmpVal)
+					aggregatedCryptoData = append(aggregatedCryptoData, ConvertCurrency(cryptoData, fiatMsg))
 				}
 			}
 		}
 
 		// sort cryptos by crypto-currency
 		var set []string
-		for _, item := range cryptoExchangeData {
+		for _, item := range aggregatedCryptoData {
 			set = append(set, item.Crypto)
 		}
 		uniqueCryptos := DeduplicateStrings(set)
 		mapCrypto := map[string][]CryptoExchanges.CryptoData{}
 		for i := range uniqueCryptos {
 			var listCrypto []CryptoExchanges.CryptoData
-			for _, item := range cryptoExchangeData {
+			for _, item := range aggregatedCryptoData {
 				if item.Crypto == uniqueCryptos[i] {
 					listCrypto = append(listCrypto, item)
 				}
@@ -79,22 +77,22 @@ func main() {
 			mapCrypto[uniqueCryptos[i]] = listCrypto
 		}
 
-		type arbStruct struct {
+		type ArbitrageData struct {
 			name, crypto string
 			arb          float64
 		}
 
-		var listArb []arbStruct
+		var arbitrageList []ArbitrageData
 		for _, cryptoList := range mapCrypto {
 			for _, itemOuter := range cryptoList {
 				for _, itemInner := range cryptoList {
 					arb := CheckArbitrage(itemInner, itemOuter)
-					listArb = append(listArb, arbStruct{fmt.Sprintf("bid: %s, ask: %s", itemInner.Name, itemOuter.Name), itemOuter.Crypto, arb})
+					arbitrageList = append(arbitrageList, ArbitrageData{fmt.Sprintf("bid: %s, ask: %s", itemInner.Name, itemOuter.Name), itemOuter.Crypto, arb})
 				}
 			}
 		}
 
-		for _, item := range listArb {
+		for _, item := range arbitrageList {
 			if item.arb > minimumArbitrageRatio {
 				val := strconv.FormatFloat(item.arb, 'f', -1, 64)
 				log.Printf("ARBITRAGE on %s at %v\n", item.name, val)

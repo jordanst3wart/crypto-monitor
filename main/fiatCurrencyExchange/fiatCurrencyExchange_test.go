@@ -57,7 +57,7 @@ func TestFiatCurrencyExchangeRates(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ch := make(chan ExchangeRates)
-			go FiatCurrencyExchangeRates(ch, time.Second, tc.client)
+			go FiatExchangeRatesRoutine(ch, time.Second, tc.client)
 
 			select {
 			case result := <-ch:
@@ -92,7 +92,7 @@ func TestFiatCurrencyExchangeRatesDataPayload(t *testing.T) {
 	}
 
 	ch := make(chan ExchangeRates)
-	go FiatCurrencyExchangeRates(ch, time.Second, client)
+	go FiatExchangeRatesRoutine(ch, time.Second, client)
 
 	select {
 	case result := <-ch:

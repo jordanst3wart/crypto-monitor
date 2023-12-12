@@ -17,8 +17,8 @@ func requestToExchange(exchange CryptoExchanges.CryptoExchange, urlList []Four, 
 }
 
 type startData struct {
-	exchange string
-	list     []Four
+	exchange   string
+	cryptoList []Four
 }
 
 func convertHelper(conversion float64, dto CryptoExchanges.CryptoData) CryptoExchanges.CryptoData {
@@ -85,25 +85,25 @@ func exchangeMutex(data startData, ch chan CryptoExchanges.CryptoData) {
 	switch data.exchange {
 	case "CoinfloorTickerAndBitstamp":
 		var resseObjectCoinfloorAndBitstamp CryptoExchanges.CoinfloorTickerAndBitstamp
-		requestToExchange(resseObjectCoinfloorAndBitstamp, data.list, ch)
+		requestToExchange(resseObjectCoinfloorAndBitstamp, data.cryptoList, ch)
 	case "IndependentReserve":
 		var responseObjectIndependentReserve CryptoExchanges.IndependentReserve
-		requestToExchange(responseObjectIndependentReserve, data.list, ch)
+		requestToExchange(responseObjectIndependentReserve, data.cryptoList, ch)
 	case "GeminiTickerBTC":
 		var responseObjectGeminiBTC CryptoExchanges.GeminiTickerBTC
-		requestToExchange(responseObjectGeminiBTC, data.list, ch)
+		requestToExchange(responseObjectGeminiBTC, data.cryptoList, ch)
 	case "GeminiTickerETH":
 		var responseObjectGeminiETH CryptoExchanges.GeminiTickerETH
-		requestToExchange(responseObjectGeminiETH, data.list, ch)
+		requestToExchange(responseObjectGeminiETH, data.cryptoList, ch)
 	case "BTCMarket":
 		var responseObjectBTC CryptoExchanges.BTCMarket
-		requestToExchange(responseObjectBTC, data.list, ch)
+		requestToExchange(responseObjectBTC, data.cryptoList, ch)
 	case "ACXTicker":
 		var responseObjectACX CryptoExchanges.ACXTicker
-		requestToExchange(responseObjectACX, data.list, ch)
+		requestToExchange(responseObjectACX, data.cryptoList, ch)
 	case "Coinjar":
 		var responseObjectCoinjar CryptoExchanges.Coinjar
-		requestToExchange(responseObjectCoinjar, data.list, ch)
+		requestToExchange(responseObjectCoinjar, data.cryptoList, ch)
 	default:
 		log.Println("Invalid key in startData")
 	}

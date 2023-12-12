@@ -1,8 +1,8 @@
 package main
 
 import (
+	"crypto-monitor/main/cryptoExchanges"
 	"crypto-monitor/main/fiatCurrencyExchange"
-	"crypto-monitor/structs"
 	"log"
 	"os"
 	"strconv"
@@ -53,7 +53,7 @@ func main() {
 			}
 		}
 
-		ch := make(chan structs.CryptoDTO)
+		ch := make(chan CryptoExchanges.CryptoDTO)
 
 		startData := getStartData()
 		for _, elem := range startData {
@@ -63,7 +63,7 @@ func main() {
 			log.Println("elapsed time: ", time.Since(start).Seconds())
 		}
 
-		listThing := []structs.CryptoDTO{}
+		listThing := []CryptoExchanges.CryptoDTO{}
 
 		for _, app := range startData {
 			for range app.list {
@@ -89,9 +89,9 @@ func main() {
 			set = append(set, item.Crypto)
 		}
 		uniqueCryptos := UniqueStrings(set)
-		mapCrypto := map[string][]structs.CryptoDTO{}
+		mapCrypto := map[string][]CryptoExchanges.CryptoDTO{}
 		for i := range uniqueCryptos {
-			listCrypto := []structs.CryptoDTO{}
+			listCrypto := []CryptoExchanges.CryptoDTO{}
 			for _, item := range listThing {
 				if item.Crypto == uniqueCryptos[i] {
 					listCrypto = append(listCrypto, item)

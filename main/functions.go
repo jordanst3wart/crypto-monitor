@@ -1,8 +1,8 @@
 package main
 
 import (
+	"crypto-monitor/main/cryptoExchanges"
 	"crypto-monitor/main/fiatCurrencyExchange"
-	"crypto-monitor/structs"
 	"log"
 )
 
@@ -10,7 +10,7 @@ type Four struct {
 	name, url, currency, crypto string
 }
 
-func requestToExchange(exchange structs.CryptoExchange, urlList []Four, ch chan structs.CryptoDTO) {
+func requestToExchange(exchange CryptoExchanges.CryptoExchange, urlList []Four, ch chan CryptoExchanges.CryptoDTO) {
 	for _, v := range urlList {
 		go exchange.RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 		//ch<-CryptoDTO{v.name,val, err}
@@ -24,7 +24,7 @@ type startData struct {
 	list     []Four
 }
 
-func convertHelper(conversion float64, dto structs.CryptoDTO) structs.CryptoDTO {
+func convertHelper(conversion float64, dto CryptoExchanges.CryptoDTO) CryptoExchanges.CryptoDTO {
 
 	last, _ := dto.Coin.LastFloat()
 	high, _ := dto.Coin.HighFloat()
@@ -33,7 +33,7 @@ func convertHelper(conversion float64, dto structs.CryptoDTO) structs.CryptoDTO 
 	ask, _ := dto.Coin.AskFloat()
 	bid, _ := dto.Coin.BidFloat()
 
-	tmpCoin := structs.BTCMarket{
+	tmpCoin := CryptoExchanges.BTCMarket{
 		last * conversion,
 		high * conversion,
 		low * conversion,
@@ -41,7 +41,7 @@ func convertHelper(conversion float64, dto structs.CryptoDTO) structs.CryptoDTO 
 		bid * conversion,
 		ask * conversion}
 
-	return structs.CryptoDTO{
+	return CryptoExchanges.CryptoDTO{
 		dto.Name,
 		tmpCoin,
 		dto.Error,
@@ -50,13 +50,13 @@ func convertHelper(conversion float64, dto structs.CryptoDTO) structs.CryptoDTO 
 	}
 }
 
-func CheckArbitage(exchange1 structs.CryptoDTO, exchange2 structs.CryptoDTO) float64 {
+func CheckArbitage(exchange1 CryptoExchanges.CryptoDTO, exchange2 CryptoExchanges.CryptoDTO) float64 {
 	bid, _ := exchange1.Coin.BidFloat()
 	ask, _ := exchange2.Coin.AskFloat()
 	return bid / ask
 }
 
-func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate fiatCurrencyExchange.ExchangeRates) structs.CryptoDTO {
+func ConvertCurrency(crypto CryptoExchanges.CryptoDTO, exchangeRate fiatCurrencyExchange.ExchangeRates) CryptoExchanges.CryptoDTO {
 	switch crypto.Currency {
 	case "USD":
 		return convertHelper(exchangeRate.Rates["USD2AUD"], crypto)
@@ -66,7 +66,7 @@ func ConvertCurrency(crypto structs.CryptoDTO, exchangeRate fiatCurrencyExchange
 		return crypto
 	default:
 		log.Println("Unknown currency trying to be converted")
-		return structs.CryptoDTO{}
+		return CryptoExchanges.CryptoDTO{}
 	}
 }
 
@@ -83,35 +83,35 @@ func UniqueStrings(input []string) []string {
 	return u
 }
 
-func calculate(data startData, ch chan structs.CryptoDTO) {
+func calculate(data startData, ch chan CryptoExchanges.CryptoDTO) {
 	switch data.exchange {
 	case "CoinfloorTickerAndBitstamp":
 		//log.Println("Requesting data from CoinfloorTickerAndBitstamp")
-		var resseObjectCoinfloorAndBitstamp structs.CoinfloorTickerAndBitstamp
+		var resseObjectCoinfloorAndBitstamp CryptoExchanges.CoinfloorTickerAndBitstamp
 		requestToExchange(resseObjectCoinfloorAndBitstamp, data.list, ch)
-	case "IndepentReserve":
-		//log.Println("Requesting data from IndepentReserve")
-		var responseObjectIndependentReserve structs.IndepentReserve
+	case "IndependentReserve":
+		//log.Println("Requesting data from IndependentReserve")
+		var responseObjectIndependentReserve CryptoExchanges.IndependentReserve
 		requestToExchange(responseObjectIndependentReserve, data.list, ch)
 	case "GeminiTickerBTC":
-		//log.Println("Requesting data from IndepentReserve")
-		var responseObjectGeminiBTC structs.GeminiTickerBTC
+		//log.Println("Requesting data from IndependentReserve")
+		var responseObjectGeminiBTC CryptoExchanges.GeminiTickerBTC
 		requestToExchange(responseObjectGeminiBTC, data.list, ch)
 	case "GeminiTickerETH":
 		//log.Println("Requesting data from GeminiTickerETH")
-		var responseObjectGeminiETH structs.GeminiTickerETH
+		var responseObjectGeminiETH CryptoExchanges.GeminiTickerETH
 		requestToExchange(responseObjectGeminiETH, data.list, ch)
 	case "BTCMarket":
 		//log.Println("Requesting data from BTCMarket")
-		var responseObjectBTC structs.BTCMarket
+		var responseObjectBTC CryptoExchanges.BTCMarket
 		requestToExchange(responseObjectBTC, data.list, ch)
 	case "ACXTicker":
 		//log.Println("Requesting data from ACX")
-		var responseObjectACX structs.ACXTicker
+		var responseObjectACX CryptoExchanges.ACXTicker
 		requestToExchange(responseObjectACX, data.list, ch)
 	case "Coinjar":
 		//log.Println("Requesting data from Coinjar")
-		var responseObjectCoinjar structs.Coinjar
+		var responseObjectCoinjar CryptoExchanges.Coinjar
 		requestToExchange(responseObjectCoinjar, data.list, ch)
 	default:
 		log.Println("Invalid key in startData")
@@ -136,7 +136,7 @@ func getStartData() []startData {
 		{"Bitstamp_LTC", "https://www.bitstamp.net/api/v2/ticker/ltcusd/", "USD", "LTC"},
 		{"Bitstamp_ETH", "https://www.bitstamp.net/api/v2/ticker/ethusd/", "USD", "ETH"},
 		{"Bitstamp_BCH", "https://www.bitstamp.net/api/v2/ticker/bchusd/", "USD", "BCH"}}},
-		startData{"IndepentReserve", []Four{
+		startData{"IndependentReserve", []Four{
 			{"IndependentReserve_BTC", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", "AUD", "BTC"},
 			{"IndependentReserve_ETH", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=eth&secondaryCurrencyCode=aud", "AUD", "ETH"},
 			{"IndependentReserve_BCH", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=bch&secondaryCurrencyCode=aud", "AUD", "BCH"},

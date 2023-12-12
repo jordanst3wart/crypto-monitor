@@ -1,7 +1,7 @@
 package fiatCurrencyExchange
 
 import (
-	"crypto-monitor/structs"
+	"crypto-monitor/main/cryptoExchanges"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -34,10 +34,10 @@ type ExchangeRates struct {
 }*/
 
 /*
-	// 1000 Monthly Requests which updates hourly
-	// free access key 8c0b46946137202ce9e9152e255f7b52
-	// can't use USD, and can't use https
-	// http://api.exchangeratesapi.io/latest?&base=EUR&access_key=8c0b46946137202ce9e9152e255f7b52
+// 1000 Monthly Requests which updates hourly
+// free access key 8c0b46946137202ce9e9152e255f7b52
+// can't use USD, and can't use https
+// http://api.exchangeratesapi.io/latest?&base=EUR&access_key=8c0b46946137202ce9e9152e255f7b52
 */
 func (e RealExchangeClient) getRates() (resp *http.Response, err error) {
 	return http.Get("http://api.exchangeratesapi.io/latest?&base=EUR&access_key=8c0b46946137202ce9e9152e255f7b52")
@@ -49,7 +49,7 @@ func (e RealExchangeClient) getRates() (resp *http.Response, err error) {
 
 func FiatCurrencyExchangeRates(ch chan ExchangeRates, updateFrequency time.Duration, client ExchangeClient) {
 	exchangeMap := make(map[string]float64)
-	var responseObject structs.CurrencyExchangeAPI
+	var responseObject CryptoExchanges.CurrencyExchangeAPI
 	// TODO need to cache
 	// TODO does the 'return' statement return out of the for loop?
 	for {

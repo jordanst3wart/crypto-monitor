@@ -91,7 +91,7 @@ func main() {
 		for _, cryptoList := range mapCrypto {
 			for _, itemOuter := range cryptoList {
 				for _, itemInner := range cryptoList {
-					arb := CheckArbitage(itemInner, itemOuter)
+					arb := CheckArbitrage(itemInner, itemOuter)
 					listArb = append(listArb, arbStruct{"bid: " + itemInner.Name + ", ask:" + itemOuter.Name, itemOuter.Crypto, arb})
 				}
 			}

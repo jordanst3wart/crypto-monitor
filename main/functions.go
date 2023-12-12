@@ -13,10 +13,7 @@ type Four struct {
 func requestToExchange(exchange CryptoExchanges.CryptoExchange, urlList []Four, ch chan CryptoExchanges.CryptoDTO) {
 	for _, v := range urlList {
 		go exchange.RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
-		//ch<-CryptoDTO{v.name,val, err}
-		//groupList = append(groupList, CryptoDTO{v.name,val, err})
 	}
-	//return groupList
 }
 
 type startData struct {
@@ -50,7 +47,7 @@ func convertHelper(conversion float64, dto CryptoExchanges.CryptoDTO) CryptoExch
 	}
 }
 
-func CheckArbitage(exchange1 CryptoExchanges.CryptoDTO, exchange2 CryptoExchanges.CryptoDTO) float64 {
+func CheckArbitrage(exchange1 CryptoExchanges.CryptoDTO, exchange2 CryptoExchanges.CryptoDTO) float64 {
 	bid, _ := exchange1.Coin.BidFloat()
 	ask, _ := exchange2.Coin.AskFloat()
 	return bid / ask
@@ -86,45 +83,30 @@ func UniqueStrings(input []string) []string {
 func calculate(data startData, ch chan CryptoExchanges.CryptoDTO) {
 	switch data.exchange {
 	case "CoinfloorTickerAndBitstamp":
-		//log.Println("Requesting data from CoinfloorTickerAndBitstamp")
 		var resseObjectCoinfloorAndBitstamp CryptoExchanges.CoinfloorTickerAndBitstamp
 		requestToExchange(resseObjectCoinfloorAndBitstamp, data.list, ch)
 	case "IndependentReserve":
-		//log.Println("Requesting data from IndependentReserve")
 		var responseObjectIndependentReserve CryptoExchanges.IndependentReserve
 		requestToExchange(responseObjectIndependentReserve, data.list, ch)
 	case "GeminiTickerBTC":
-		//log.Println("Requesting data from IndependentReserve")
 		var responseObjectGeminiBTC CryptoExchanges.GeminiTickerBTC
 		requestToExchange(responseObjectGeminiBTC, data.list, ch)
 	case "GeminiTickerETH":
-		//log.Println("Requesting data from GeminiTickerETH")
 		var responseObjectGeminiETH CryptoExchanges.GeminiTickerETH
 		requestToExchange(responseObjectGeminiETH, data.list, ch)
 	case "BTCMarket":
-		//log.Println("Requesting data from BTCMarket")
 		var responseObjectBTC CryptoExchanges.BTCMarket
 		requestToExchange(responseObjectBTC, data.list, ch)
 	case "ACXTicker":
-		//log.Println("Requesting data from ACX")
 		var responseObjectACX CryptoExchanges.ACXTicker
 		requestToExchange(responseObjectACX, data.list, ch)
 	case "Coinjar":
-		//log.Println("Requesting data from Coinjar")
 		var responseObjectCoinjar CryptoExchanges.Coinjar
 		requestToExchange(responseObjectCoinjar, data.list, ch)
 	default:
 		log.Println("Invalid key in startData")
 	}
 }
-
-// cointree
-// coinspot
-
-// https://webapi.coinfloor.co.uk/bist/XBT/GBP/ticker/
-// https://webapi.coinfloor.co.uk/bist/XBT/GBP/ticker/
-// https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP
-// https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP
 
 func getStartData() []startData {
 	return []startData{{"CoinfloorTickerAndBitstamp", []Four{

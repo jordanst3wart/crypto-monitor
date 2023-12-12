@@ -3,7 +3,7 @@ package fiatCurrencyExchange
 import (
 	"crypto-monitor/main/cryptoExchanges"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -47,7 +47,7 @@ func FiatCurrencyExchangeRates(ch chan ExchangeRates, updateFrequency time.Durat
 			continue
 		}
 
-		responseData, err := ioutil.ReadAll(resp.Body)
+		responseData, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Println("Failed to read message from Exchange client")
 			ch <- ExchangeRates{nil, err}

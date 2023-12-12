@@ -40,8 +40,6 @@ func main() {
 			}
 		}
 
-		// fiatMsg = <-fiatRatesChannel
-
 		cryptoExchangeChannel := make(chan CryptoExchanges.CryptoData)
 
 		for _, elem := range exchangeDataList {

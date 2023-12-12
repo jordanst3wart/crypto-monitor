@@ -130,3 +130,6 @@ Check for arbitrage with:
 ```sh
 cat /home/ec2-user/crypto-monitor/bin/main.log | grep ARBITRAGE | grep -v Inf
 ```
+
+
+Use Renovate bot: https://github.com/renovatebot/renovate

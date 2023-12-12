@@ -3,7 +3,6 @@ package fiatCurrencyExchange
 import (
 	"crypto-monitor/main/cryptoExchanges"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,24 +13,12 @@ type ExchangeClient interface {
 	getRates() (resp *http.Response, err error)
 }
 
-type MockErrorExchangeClient struct{}
-
 type RealExchangeClient struct{}
-
-func (e MockErrorExchangeClient) getRates() (resp *http.Response, err error) {
-	// return json scaffold
-	return &http.Response{Body: nil}, errors.New("some error")
-}
 
 type ExchangeRates struct {
 	Rates map[string]float64
 	Err   error
 }
-
-/*func (e MockExchangeClient) getRates() (resp *http.Response, err error) {
-	// return json scaffold
-	return &http.Response{Body: nil}, nil
-}*/
 
 /*
 // 1000 Monthly Requests which updates hourly
@@ -50,8 +37,6 @@ func (e RealExchangeClient) getRates() (resp *http.Response, err error) {
 func FiatCurrencyExchangeRates(ch chan ExchangeRates, updateFrequency time.Duration, client ExchangeClient) {
 	exchangeMap := make(map[string]float64)
 	var responseObject CryptoExchanges.CurrencyExchangeAPI
-	// TODO need to cache
-	// TODO does the 'return' statement return out of the for loop?
 	for {
 		resp, err := client.getRates()
 		if err != nil {
@@ -61,7 +46,6 @@ func FiatCurrencyExchangeRates(ch chan ExchangeRates, updateFrequency time.Durat
 			time.Sleep(1 * time.Minute)
 			continue
 		}
-		// https://fixer.io/product
 
 		responseData, err := ioutil.ReadAll(resp.Body)
 		if err != nil {

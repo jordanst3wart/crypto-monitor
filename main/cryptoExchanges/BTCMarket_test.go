@@ -15,6 +15,14 @@ func TestCryptoExchange(t *testing.T) {
 		if result.Error != nil {
 			t.Errorf("Didn't expect an error but got one")
 		}
+		bid, _ := result.Coin.BidFloat()
+		ask, _ := result.Coin.AskFloat()
+		if bid == float64(0) {
+			t.Errorf("Bid not defined")
+		}
+		if ask == float64(0) {
+			t.Errorf("Bid not defined")
+		}
 		// check payload...
 		/*if !tc.expectedError && result.Err != nil {
 			t.Errorf("Did not expect an error but got one: %v", result.Err)

@@ -16,7 +16,6 @@ import (
 
 func main() {
 	// TODO setup reading from config file
-	DEBUG := false
 	ARB_RATIO := 1.01
 
 	// log setup
@@ -30,27 +29,16 @@ func main() {
 	msg := <-fiatRates
 	if msg.Err != nil {
 		log.Println("Fiat exchange error: ", msg.Err)
-	} else if DEBUG {
-		log.Println("Fiat rates: ", msg.Rates)
 	}
 
 	for {
-		start := time.Now()
-		if DEBUG {
-			log.Println("Starting iteration...")
-		}
-
 		select {
 		case msg := <-fiatRates:
 			if msg.Err != nil {
 				log.Println("Fiat exchange error: ", msg.Err)
-			} else if DEBUG {
-				log.Println("Fiat received message", msg)
 			}
 		default:
-			if DEBUG {
-				log.Println("No fiat message received.")
-			}
+			log.Println("No fiat message received.")
 		}
 
 		ch := make(chan CryptoExchanges.CryptoDTO)
@@ -58,9 +46,6 @@ func main() {
 		startData := getStartData()
 		for _, elem := range startData {
 			calculate(elem, ch)
-		}
-		if DEBUG {
-			log.Println("elapsed time: ", time.Since(start).Seconds())
 		}
 
 		listThing := []CryptoExchanges.CryptoDTO{}
@@ -74,9 +59,6 @@ func main() {
 					//log.Println(val)
 					tmpVal := ConvertCurrency(val, msg)
 					listThing = append(listThing, tmpVal)
-					if DEBUG {
-						log.Println(tmpVal)
-					}
 					// if greater than some margin send email
 					// standardise logging
 				}
@@ -123,20 +105,6 @@ func main() {
 			}
 		}
 
-		//log.Println(listArb)
-
-		/*if DEBUG {
-			log.Println("got values from Crypto exchange")
-			log.Println(groupList)
-		}*/
-		if DEBUG {
-			log.Println("elapsed time: ", time.Since(start).Seconds())
-		}
-		// 14.40s and 8s elapsed before async
-		// 1.6s after async
-
-		// send email if arbitage found
-		// wait five minutes for next iteration
 		// biggest limit seen is 1 call per second
 		time.Sleep(time.Second * 100)
 	}

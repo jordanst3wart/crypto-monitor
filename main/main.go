@@ -3,6 +3,7 @@ package main
 import (
 	"crypto-monitor/main/cryptoExchanges"
 	"crypto-monitor/main/fiatCurrencyExchange"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -11,70 +12,66 @@ import (
 
 // TODO Use orders to determine the volume of available & log amount of volume is available to buy/sell
 // TODO logrus to have better debug logic
-// TODO write tests
-// TODO use config file
 
 func main() {
-	// TODO setup reading from config file
-	ARB_RATIO := 1.01
+	minimumArbitrageRatio := 1.01
+	exchangeDataList := ExchangeDataList()
 
 	// log setup
 	log.SetOutput(os.Stdout)
 	log.Println("Starting log...")
 
-	fiatRates := make(chan fiatCurrencyExchange.ExchangeRates)
+	fiatRatesChannel := make(chan fiatCurrencyExchange.ExchangeRates)
 
 	// get exchange rates to start
-	go fiatCurrencyExchange.FiatCurrencyExchangeRates(fiatRates, 60*time.Minute, fiatCurrencyExchange.RealExchangeClient{})
-	msg := <-fiatRates
-	if msg.Err != nil {
-		log.Println("Fiat exchange error: ", msg.Err)
+	go fiatCurrencyExchange.FiatCurrencyExchangeRates(fiatRatesChannel, 60*time.Minute, fiatCurrencyExchange.RealExchangeClient{})
+	fiatMsg := <-fiatRatesChannel
+	if fiatMsg.Err != nil {
+		log.Printf("Fiat exchange error: %v \n", fiatMsg.Err)
 	}
 
 	for {
 		select {
-		case msg := <-fiatRates:
+		case msg := <-fiatRatesChannel:
 			if msg.Err != nil {
-				log.Println("Fiat exchange error: ", msg.Err)
+				log.Printf("Fiat exchange error: %v \n", msg.Err)
 			}
 		default:
-			log.Println("No fiat message received.")
+			log.Println("No fiat exchange rate message received...")
 		}
 
-		ch := make(chan CryptoExchanges.CryptoDTO)
+		// fiatMsg = <-fiatRatesChannel
 
-		startData := getStartData()
-		for _, elem := range startData {
-			calculate(elem, ch)
+		cryptoExchangeChannel := make(chan CryptoExchanges.CryptoData)
+
+		for _, elem := range exchangeDataList {
+			exchangeMutex(elem, cryptoExchangeChannel)
 		}
 
-		listThing := []CryptoExchanges.CryptoDTO{}
+		var cryptoExchangeData []CryptoExchanges.CryptoData
 
-		for _, app := range startData {
+		for _, app := range exchangeDataList {
 			for range app.list {
-				val := <-ch
+				val := <-cryptoExchangeChannel
 				if val.Error != nil {
-					log.Println("Name:", val.Name, "Error", val.Error, "Coin", val.Coin)
+					log.Printf("Name: %s, Error: %v, Coin: %v\n", val.Name, val.Error, val.Coin)
 				} else {
-					//log.Println(val)
-					tmpVal := ConvertCurrency(val, msg)
-					listThing = append(listThing, tmpVal)
-					// if greater than some margin send email
-					// standardise logging
+					tmpVal := ConvertCurrency(val, fiatMsg) // TODO this is wrong
+					cryptoExchangeData = append(cryptoExchangeData, tmpVal)
 				}
 			}
 		}
 
 		// sort cryptos by crypto-currency
-		set := []string{}
-		for _, item := range listThing {
+		var set []string
+		for _, item := range cryptoExchangeData {
 			set = append(set, item.Crypto)
 		}
-		uniqueCryptos := UniqueStrings(set)
-		mapCrypto := map[string][]CryptoExchanges.CryptoDTO{}
+		uniqueCryptos := DeduplicateStrings(set)
+		mapCrypto := map[string][]CryptoExchanges.CryptoData{}
 		for i := range uniqueCryptos {
-			listCrypto := []CryptoExchanges.CryptoDTO{}
-			for _, item := range listThing {
+			var listCrypto []CryptoExchanges.CryptoData
+			for _, item := range cryptoExchangeData {
 				if item.Crypto == uniqueCryptos[i] {
 					listCrypto = append(listCrypto, item)
 				}
@@ -87,21 +84,20 @@ func main() {
 			arb          float64
 		}
 
-		listArb := []arbStruct{}
+		var listArb []arbStruct
 		for _, cryptoList := range mapCrypto {
 			for _, itemOuter := range cryptoList {
 				for _, itemInner := range cryptoList {
 					arb := CheckArbitrage(itemInner, itemOuter)
-					listArb = append(listArb, arbStruct{"bid: " + itemInner.Name + ", ask:" + itemOuter.Name, itemOuter.Crypto, arb})
+					listArb = append(listArb, arbStruct{fmt.Sprintf("bid: %s, ask: %s", itemInner.Name, itemOuter.Name), itemOuter.Crypto, arb})
 				}
 			}
 		}
 
 		for _, item := range listArb {
-			if item.arb > ARB_RATIO {
-				//val, _ := strconv.ParseFloat(item.arb, 64)
+			if item.arb > minimumArbitrageRatio {
 				val := strconv.FormatFloat(item.arb, 'f', -1, 64)
-				log.Println("ARBITRAGE!!! on " + item.name + " at " + val)
+				log.Printf("ARBITRAGE on %s at %v\n", item.name, val)
 			}
 		}
 

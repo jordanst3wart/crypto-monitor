@@ -27,7 +27,7 @@ type CurrencyExchange struct {
 	USD float64 `json:"USD"`
 }
 
-type CryptoDTO struct {
+type CryptoData struct {
 	Name     string
 	Coin     CryptoExchange
 	Error    error
@@ -64,6 +64,6 @@ type CryptoExchange interface {
 	HighFloat() (float64, error)
 	LowFloat() (float64, error)
 	LastFloat() (float64, error)
-	RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string)
+	RequestUpdate(name string, url string, ch chan CryptoData, currency string, crypto string)
 	// RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 }

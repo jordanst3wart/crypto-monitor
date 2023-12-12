@@ -7,7 +7,7 @@ import (
 
 // TODO use interface
 func TestCryptoExchange(t *testing.T) {
-	ch := make(chan CryptoDTO)
+	ch := make(chan CryptoData)
 	var responseObjectBTC BTCMarket
 	go responseObjectBTC.RequestUpdate("BTCMarket_AUD_BTC", "https://api.btcmarkets.net/market/BTC/AUD/tick", ch, "AUD", "BTC")
 	select {

@@ -35,12 +35,12 @@ func (b BTCMarket) LastFloat() (float64, error) {
 	return b.Last, nil
 }
 
-func (b BTCMarket) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
+func (b BTCMarket) RequestUpdate(name string, url string, ch chan CryptoData, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b, err, currency, crypto}
+		ch <- CryptoData{name, b, err, currency, crypto}
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b, err, currency, crypto}
+		ch <- CryptoData{name, b, err, currency, crypto}
 	}
 }

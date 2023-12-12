@@ -10,7 +10,7 @@ type Four struct {
 	name, url, currency, crypto string
 }
 
-func requestToExchange(exchange CryptoExchanges.CryptoExchange, urlList []Four, ch chan CryptoExchanges.CryptoDTO) {
+func requestToExchange(exchange CryptoExchanges.CryptoExchange, urlList []Four, ch chan CryptoExchanges.CryptoData) {
 	for _, v := range urlList {
 		go exchange.RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 	}
@@ -21,7 +21,7 @@ type startData struct {
 	list     []Four
 }
 
-func convertHelper(conversion float64, dto CryptoExchanges.CryptoDTO) CryptoExchanges.CryptoDTO {
+func convertHelper(conversion float64, dto CryptoExchanges.CryptoData) CryptoExchanges.CryptoData {
 
 	last, _ := dto.Coin.LastFloat()
 	high, _ := dto.Coin.HighFloat()
@@ -38,7 +38,7 @@ func convertHelper(conversion float64, dto CryptoExchanges.CryptoDTO) CryptoExch
 		bid * conversion,
 		ask * conversion}
 
-	return CryptoExchanges.CryptoDTO{
+	return CryptoExchanges.CryptoData{
 		dto.Name,
 		tmpCoin,
 		dto.Error,
@@ -47,13 +47,13 @@ func convertHelper(conversion float64, dto CryptoExchanges.CryptoDTO) CryptoExch
 	}
 }
 
-func CheckArbitrage(exchange1 CryptoExchanges.CryptoDTO, exchange2 CryptoExchanges.CryptoDTO) float64 {
+func CheckArbitrage(exchange1 CryptoExchanges.CryptoData, exchange2 CryptoExchanges.CryptoData) float64 {
 	bid, _ := exchange1.Coin.BidFloat()
 	ask, _ := exchange2.Coin.AskFloat()
 	return bid / ask
 }
 
-func ConvertCurrency(crypto CryptoExchanges.CryptoDTO, exchangeRate fiatCurrencyExchange.ExchangeRates) CryptoExchanges.CryptoDTO {
+func ConvertCurrency(crypto CryptoExchanges.CryptoData, exchangeRate fiatCurrencyExchange.ExchangeRates) CryptoExchanges.CryptoData {
 	switch crypto.Currency {
 	case "USD":
 		return convertHelper(exchangeRate.Rates["USD2AUD"], crypto)
@@ -63,24 +63,25 @@ func ConvertCurrency(crypto CryptoExchanges.CryptoDTO, exchangeRate fiatCurrency
 		return crypto
 	default:
 		log.Println("Unknown currency trying to be converted")
-		return CryptoExchanges.CryptoDTO{}
+		return CryptoExchanges.CryptoData{}
 	}
 }
 
-func UniqueStrings(input []string) []string {
-	u := make([]string, 0, len(input))
-	m := make(map[string]bool)
+func DeduplicateStrings(input []string) []string {
+	uniqueStrings := make([]string, 0, len(input))
+	seenMap := make(map[string]bool)
 
-	for _, val := range input {
-		if _, ok := m[val]; !ok {
-			m[val] = true
-			u = append(u, val)
+	for _, str := range input {
+		if _, exists := seenMap[str]; !exists {
+			seenMap[str] = true
+			uniqueStrings = append(uniqueStrings, str)
 		}
 	}
-	return u
+
+	return uniqueStrings
 }
 
-func calculate(data startData, ch chan CryptoExchanges.CryptoDTO) {
+func exchangeMutex(data startData, ch chan CryptoExchanges.CryptoData) {
 	switch data.exchange {
 	case "CoinfloorTickerAndBitstamp":
 		var resseObjectCoinfloorAndBitstamp CryptoExchanges.CoinfloorTickerAndBitstamp
@@ -108,7 +109,7 @@ func calculate(data startData, ch chan CryptoExchanges.CryptoDTO) {
 	}
 }
 
-func getStartData() []startData {
+func ExchangeDataList() []startData {
 	return []startData{{"CoinfloorTickerAndBitstamp", []Four{
 		{"CoinCorner_BTC", "https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP", "GBP", "BTC"},
 		{"CoinCorner_ETH", "https://api.coincorner.com/api/Ticker?Coin=ETH&Currency=GBP", "GBP", "ETH"},

@@ -20,14 +20,14 @@ type ETHVolume struct {
 	Timestamp int    `json:"timestamp"`
 }
 
-func (b GeminiTickerETH) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
+func (b GeminiTickerETH) RequestUpdate(name string, url string, ch chan CryptoData, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b, err, currency, crypto}
+		ch <- CryptoData{name, b, err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b, err, currency, crypto}
+		ch <- CryptoData{name, b, err, currency, crypto}
 	}
 }
 

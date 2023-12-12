@@ -14,15 +14,15 @@ type Coinjar struct {
 	Ask    string `json:"ask"`
 }
 
-func (b Coinjar) RequestUpdate(name string, url string, ch chan CryptoDTO, currency string, crypto string) {
+func (b Coinjar) RequestUpdate(name string, url string, ch chan CryptoData, currency string, crypto string) {
 	// RequestUpdate(v.name, v.url, ch, v.currency, v.crypto)
 	responseData, err := requestWrapper(url)
 	if err != nil {
-		ch <- CryptoDTO{name, b, err, currency, crypto}
+		ch <- CryptoData{name, b, err, currency, crypto}
 		//return b, err
 	} else {
 		err = json.Unmarshal(responseData, &b)
-		ch <- CryptoDTO{name, b, err, currency, crypto}
+		ch <- CryptoData{name, b, err, currency, crypto}
 	}
 }
 

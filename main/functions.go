@@ -113,16 +113,13 @@ func ExchangeDataList() []startData {
 	return []startData{{"CoinfloorTickerAndBitstamp", []Four{
 		{"CoinCorner_BTC", "https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP", "GBP", "BTC"},
 		{"CoinCorner_ETH", "https://api.coincorner.com/api/Ticker?Coin=ETH&Currency=GBP", "GBP", "ETH"},
-		/*{"Coinfloor_BCH","https://webapi.coinfloor.co.uk/bist/BCH/GBP/ticker/", "GBP", "BCH"},  no longer supported */
 		{"Bitstamp_BTC", "https://www.bitstamp.net/api/v2/ticker/btcusd/", "USD", "BTC"},
 		{"Bitstamp_XRP", "https://www.bitstamp.net/api/v2/ticker/xrpusd/", "USD", "XRP"},
 		{"Bitstamp_LTC", "https://www.bitstamp.net/api/v2/ticker/ltcusd/", "USD", "LTC"},
-		{"Bitstamp_ETH", "https://www.bitstamp.net/api/v2/ticker/ethusd/", "USD", "ETH"},
-		{"Bitstamp_BCH", "https://www.bitstamp.net/api/v2/ticker/bchusd/", "USD", "BCH"}}},
+		{"Bitstamp_ETH", "https://www.bitstamp.net/api/v2/ticker/ethusd/", "USD", "ETH"}}},
 		startData{"IndependentReserve", []Four{
 			{"IndependentReserve_BTC", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xbt&secondaryCurrencyCode=aud", "AUD", "BTC"},
 			{"IndependentReserve_ETH", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=eth&secondaryCurrencyCode=aud", "AUD", "ETH"},
-			{"IndependentReserve_BCH", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=bch&secondaryCurrencyCode=aud", "AUD", "BCH"},
 			{"IndependentReserve_XRP", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=xrp&secondaryCurrencyCode=aud", "AUD", "XRP"},
 			{"IndependentReserve_LTC", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=ltc&secondaryCurrencyCode=aud", "AUD", "LTC"}}},
 		startData{"GeminiTickerBTC", []Four{
@@ -132,7 +129,6 @@ func ExchangeDataList() []startData {
 		startData{"BTCMarket", []Four{
 			{"BTCMarket_AUD_BTC", "https://api.btcmarkets.net/market/BTC/AUD/tick", "AUD", "BTC"},
 			{"BTCMarket_AUD_ETH", "https://api.btcmarkets.net/market/ETH/AUD/tick", "AUD", "ETH"},
-			{"BTCMarket_AUD_BCH", "https://api.btcmarkets.net/market/BCHABC/AUD/tick", "AUD", "BCH"},
 			{"BTCMarket_AUD_XRP", "https://api.btcmarkets.net/market/XRP/AUD/tick", "AUD", "XRP"},
 			{"BTCMarket_AUD_LTC", "https://api.btcmarkets.net/market/LTC/AUD/tick", "AUD", "LTC"}}},
 		startData{"Coinjar", []Four{

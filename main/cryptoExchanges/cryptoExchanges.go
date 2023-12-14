@@ -3,6 +3,7 @@ package CryptoExchanges
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -39,7 +40,13 @@ type CryptoData struct {
 func requestWrapper(url string) ([]byte, error) {
 	var responseData []byte
 
-	resp, err := http.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Printf("req failed for %s error is %v", url, err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return responseData, fmt.Errorf("get request failed for URL: %s, error: %w ", url, err)
 	}

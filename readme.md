@@ -131,5 +131,14 @@ Check for arbitrage with:
 cat /home/ec2-user/crypto-monitor/bin/main.log | grep ARBITRAGE | grep -v Inf
 ```
 
-
 Use Renovate bot: https://github.com/renovatebot/renovate
+
+https://go.dev/doc/effective_go
+
+https://medium.com/@kdnotes/golang-naming-rules-and-conventions-8efeecd23b68
+
+Kill existing process:
+```sh
+ps -ef | grep /home/ec2-user/crypto-monitor/bin/main
+# kill 1292727 id
+```

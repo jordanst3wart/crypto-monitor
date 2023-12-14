@@ -18,6 +18,7 @@ func main() {
 	exchangeDataList := ExchangeDataList()
 
 	// log setup
+	os.Setenv("TZ", "Australia/Sydney")
 	log.SetOutput(os.Stdout)
 	log.Println("Starting log...")
 
@@ -98,6 +99,6 @@ func main() {
 		}
 
 		// biggest limit seen is 1 call per second
-		time.Sleep(time.Second * 100)
+		time.Sleep(time.Second * 25)
 	}
 }

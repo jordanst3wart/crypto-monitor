@@ -8,27 +8,6 @@ import (
 	"time"
 )
 
-/*
-	bid_aud
-	offer_aud
-*/
-
-// the `json:""` are called struct tags
-// by default the json is parsed input the matching key
-// currency struct
-type CurrencyExchangeAPI struct {
-	Base  string           `json:"base"`
-	Rates CurrencyExchange `json:"rates"`
-	Date  string           `json:"date"`
-}
-
-type CurrencyExchange struct {
-	GBP float64 `json:"GBP"`
-	AUD float64 `json:"AUD"`
-	EUR float64 `json:"EUR"`
-	USD float64 `json:"USD"`
-}
-
 type CryptoData struct {
 	Name     string
 	Coin     CryptoExchange
@@ -37,7 +16,6 @@ type CryptoData struct {
 	Crypto   string
 }
 
-// TODO put logic in here for RequestUpdate to reduce repeating code
 func requestWrapper(url string) ([]byte, error) {
 	var responseData []byte
 

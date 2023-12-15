@@ -30,21 +30,18 @@ func convertHelper(conversion float64, dto CryptoExchanges.CryptoData) CryptoExc
 	ask, _ := dto.Coin.AskFloat()
 	bid, _ := dto.Coin.BidFloat()
 
-	// TODO remove
-	tmpCoin := CryptoExchanges.BTCMarket{
-		last * conversion,
-		high * conversion,
-		low * conversion,
-		volume * conversion,
-		bid * conversion,
-		ask * conversion}
-
 	return CryptoExchanges.CryptoData{
-		dto.Name,
-		tmpCoin,
-		dto.Error,
-		"AUD",
-		dto.Crypto,
+		Name: dto.Name,
+		Coin: CryptoExchanges.BTCMarket{
+			last * conversion,
+			high * conversion,
+			low * conversion,
+			volume * conversion,
+			bid * conversion,
+			ask * conversion},
+		Error:    dto.Error,
+		Currency: "AUD",
+		Crypto:   dto.Crypto,
 	}
 }
 

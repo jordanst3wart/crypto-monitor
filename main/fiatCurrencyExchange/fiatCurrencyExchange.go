@@ -1,13 +1,25 @@
 package fiatCurrencyExchange
 
 import (
-	"crypto-monitor/main/cryptoExchanges"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"time"
 )
+
+type CurrencyExchangeAPI struct {
+	Base  string           `json:"base"`
+	Rates CurrencyExchange `json:"rates"`
+	Date  string           `json:"date"`
+}
+
+type CurrencyExchange struct {
+	GBP float64 `json:"GBP"`
+	AUD float64 `json:"AUD"`
+	EUR float64 `json:"EUR"`
+	USD float64 `json:"USD"`
+}
 
 type ExchangeClient interface {
 	getRates() (resp *http.Response, err error)
@@ -36,7 +48,7 @@ func (e RealExchangeClient) getRates() (resp *http.Response, err error) {
 
 func FiatExchangeRatesRoutine(ch chan ExchangeRates, updateFrequency time.Duration, client ExchangeClient) {
 	exchangeMap := make(map[string]float64)
-	var responseObject CryptoExchanges.CurrencyExchangeAPI
+	var responseObject CurrencyExchangeAPI
 	for {
 		resp, err := client.getRates()
 		if err != nil {

@@ -2,9 +2,10 @@ package CryptoExchanges
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 /*
@@ -40,13 +41,17 @@ type CryptoData struct {
 func requestWrapper(url string) ([]byte, error) {
 	var responseData []byte
 
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Printf("req failed for %s error is %v", url, err)
 	}
 
 	req.Header.Add("Accept", "application/json")
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return responseData, fmt.Errorf("get request failed for URL: %s, error: %w ", url, err)
 	}
@@ -56,7 +61,7 @@ func requestWrapper(url string) ([]byte, error) {
 		return responseData, fmt.Errorf("non-OK HTTP status received for URL %s: %d", url, resp.StatusCode)
 	}
 
-	responseData, err = ioutil.ReadAll(resp.Body)
+	responseData, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return responseData, fmt.Errorf("error reading response data for URL: %s, error: %d", url, err)
 	}

@@ -30,6 +30,7 @@ func convertHelper(conversion float64, dto CryptoExchanges.CryptoData) CryptoExc
 	ask, _ := dto.Coin.AskFloat()
 	bid, _ := dto.Coin.BidFloat()
 
+	// TODO remove
 	tmpCoin := CryptoExchanges.BTCMarket{
 		last * conversion,
 		high * conversion,
@@ -83,36 +84,34 @@ func DeduplicateStrings(input []string) []string {
 
 func exchangeMutex(data startData, ch chan CryptoExchanges.CryptoData) {
 	switch data.exchange {
-	case "CoinfloorTickerAndBitstamp":
-		var resseObjectCoinfloorAndBitstamp CryptoExchanges.CoinfloorTickerAndBitstamp
-		requestToExchange(resseObjectCoinfloorAndBitstamp, data.cryptoList, ch)
+	case "Bitstamp":
+		var responseBitstamp CryptoExchanges.Bitstamp
+		requestToExchange(responseBitstamp, data.cryptoList, ch)
 	case "IndependentReserve":
-		var responseObjectIndependentReserve CryptoExchanges.IndependentReserve
-		requestToExchange(responseObjectIndependentReserve, data.cryptoList, ch)
+		var responseIndependentReserve CryptoExchanges.IndependentReserve
+		requestToExchange(responseIndependentReserve, data.cryptoList, ch)
 	case "GeminiTickerBTC":
-		var responseObjectGeminiBTC CryptoExchanges.GeminiTickerBTC
-		requestToExchange(responseObjectGeminiBTC, data.cryptoList, ch)
+		var responseGeminiBTC CryptoExchanges.GeminiTickerBTC
+		requestToExchange(responseGeminiBTC, data.cryptoList, ch)
 	case "GeminiTickerETH":
-		var responseObjectGeminiETH CryptoExchanges.GeminiTickerETH
-		requestToExchange(responseObjectGeminiETH, data.cryptoList, ch)
+		var responseGeminiETH CryptoExchanges.GeminiTickerETH
+		requestToExchange(responseGeminiETH, data.cryptoList, ch)
 	case "BTCMarket":
-		var responseObjectBTC CryptoExchanges.BTCMarket
-		requestToExchange(responseObjectBTC, data.cryptoList, ch)
+		var responseBTC CryptoExchanges.BTCMarket
+		requestToExchange(responseBTC, data.cryptoList, ch)
 	case "ACXTicker":
-		var responseObjectACX CryptoExchanges.ACXTicker
-		requestToExchange(responseObjectACX, data.cryptoList, ch)
+		var responseACX CryptoExchanges.ACXTicker
+		requestToExchange(responseACX, data.cryptoList, ch)
 	case "Coinjar":
-		var responseObjectCoinjar CryptoExchanges.Coinjar
-		requestToExchange(responseObjectCoinjar, data.cryptoList, ch)
+		var responseCoinjar CryptoExchanges.Coinjar
+		requestToExchange(responseCoinjar, data.cryptoList, ch)
 	default:
-		log.Println("Invalid key in startData")
+		log.Println("Invalid key in exchange list")
 	}
 }
 
 func ExchangeDataList() []startData {
-	return []startData{{"CoinfloorTickerAndBitstamp", []Four{
-		{"CoinCorner_BTC", "https://api.coincorner.com/api/Ticker?Coin=BTC&Currency=GBP", "GBP", "BTC"},
-		{"CoinCorner_ETH", "https://api.coincorner.com/api/Ticker?Coin=ETH&Currency=GBP", "GBP", "ETH"},
+	return []startData{{"Bitstamp", []Four{
 		{"Bitstamp_BTC", "https://www.bitstamp.net/api/v2/ticker/btcusd/", "USD", "BTC"},
 		{"Bitstamp_XRP", "https://www.bitstamp.net/api/v2/ticker/xrpusd/", "USD", "XRP"},
 		{"Bitstamp_LTC", "https://www.bitstamp.net/api/v2/ticker/ltcusd/", "USD", "LTC"},

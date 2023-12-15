@@ -31,6 +31,8 @@ func main() {
 		log.Fatalf("Fiat exchange error on start up: %v \n", fiatMsg.Err)
 	}
 
+	cryptoExchangeChannel := make(chan CryptoExchanges.CryptoData)
+
 	for {
 		select {
 		case fiatRateMsg := <-fiatRatesChannel:
@@ -40,8 +42,6 @@ func main() {
 				fiatMsg = fiatRateMsg
 			}
 		}
-
-		cryptoExchangeChannel := make(chan CryptoExchanges.CryptoData)
 
 		for _, elem := range exchangeDataList {
 			exchangeMutex(elem, cryptoExchangeChannel)

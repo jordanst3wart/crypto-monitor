@@ -14,8 +14,6 @@ See Makefile
 Did stuff through this:
 https://tutorialedge.net/golang/consuming-restful-api-with-go/
 
-Todo document architecture
-
 ### Business Requirements
 Send email of buy
 
@@ -24,7 +22,6 @@ buy lower on AU, and Coinfloor, exchange if global market is higher. The market 
 Purge old orders.
 
 harder: buy lower on Global exchange if global market is higher
-
 
 
 ### instance
@@ -70,7 +67,7 @@ scp -i ~/.ssh/python-watch-key.pem -r bin ec2-user@13.239.8.107:/home/ec2-user/c
 
 run with no hanging up, logging and in the background:
 ```sh
-nohup /home/ec2-user/crypto-monitor/bin/main >> /home/ec2-user/crypto-monitor/bin/main.log 2>&1 &
+nohup /home/ec2-user/crypto-monitor/bin/main >> /home/ec2-user/crypto-monitor/bin/crypto.log 2>&1 &
 ```
 
 Check for arbitrage with:
@@ -88,4 +85,12 @@ Kill existing process:
 ```sh
 ps -ef | grep /home/ec2-user/crypto-monitor/bin/main
 # kill 1292727 id
+```
+
+
+Build deploy:
+```sh
+# need to stop it on server with ps -ef | grep main
+env GOOS=linux go build -ldflags="-s -w" -o bin/main main/functions.go main/main.go
+scp -i ~/.ssh/python-watch-key.pem -r bin ec2-user@13.239.8.107:/home/ec2-user/crypto-monitor
 ```

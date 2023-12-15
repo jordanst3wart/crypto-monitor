@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-type CoinfloorTickerAndBitstamp struct {
+type Bitstamp struct {
 	Last   string `json:"last"`
 	High   string `json:"high"`
 	Low    string `json:"low"`
@@ -15,7 +15,7 @@ type CoinfloorTickerAndBitstamp struct {
 	Vwap   string `json:"vwap"`
 }
 
-func (b CoinfloorTickerAndBitstamp) RequestUpdate(name string, url string, ch chan CryptoData, currency string, crypto string) {
+func (b Bitstamp) RequestUpdate(name string, url string, ch chan CryptoData, currency string, crypto string) {
 	responseData, err := requestWrapper(url)
 	if err != nil {
 		ch <- CryptoData{name, b, err, currency, crypto}
@@ -26,26 +26,26 @@ func (b CoinfloorTickerAndBitstamp) RequestUpdate(name string, url string, ch ch
 	}
 }
 
-func (b CoinfloorTickerAndBitstamp) VolumeFloat() (float64, error) {
+func (b Bitstamp) VolumeFloat() (float64, error) {
 	return strconv.ParseFloat(b.Volume, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) AskFloat() (float64, error) {
+func (b Bitstamp) AskFloat() (float64, error) {
 	return strconv.ParseFloat(b.Ask, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) BidFloat() (float64, error) {
+func (b Bitstamp) BidFloat() (float64, error) {
 	return strconv.ParseFloat(b.Bid, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) HighFloat() (float64, error) {
+func (b Bitstamp) HighFloat() (float64, error) {
 	return strconv.ParseFloat(b.High, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) LowFloat() (float64, error) {
+func (b Bitstamp) LowFloat() (float64, error) {
 	return strconv.ParseFloat(b.Low, 64)
 }
 
-func (b CoinfloorTickerAndBitstamp) LastFloat() (float64, error) {
+func (b Bitstamp) LastFloat() (float64, error) {
 	return strconv.ParseFloat(b.Last, 64)
 }

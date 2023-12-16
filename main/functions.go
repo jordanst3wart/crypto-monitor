@@ -140,7 +140,7 @@ func ExchangeDataList() []startData {
 			{"IndependentReserve_AUD_DOGE", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=doge&secondaryCurrencyCode=aud", "AUD", "DOGE"},
 			{"IndependentReserve_AUD_LINK", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=link&secondaryCurrencyCode=aud", "AUD", "LINK"},
 			{"IndependentReserve_AUD_AAVE", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=aave&secondaryCurrencyCode=aud", "AUD", "AAVE"},
-			{"IndependentReserve_AUD_DOT", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=aave&secondaryCurrencyCode=aud", "AUD", "DOT"},
+			{"IndependentReserve_AUD_DOT", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=dot&secondaryCurrencyCode=aud", "AUD", "DOT"},
 			{"IndependentReserve_AUD_MANA", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=mana&secondaryCurrencyCode=aud", "AUD", "MANA"},
 			{"IndependentReserve_AUD_UNI", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=uni&secondaryCurrencyCode=aud", "AUD", "UNI"},
 			{"IndependentReserve_AUD_BAT", "https://api.independentreserve.com/Public/GetMarketSummary?primaryCurrencyCode=bat&secondaryCurrencyCode=aud", "AUD", "BAT"},
@@ -180,4 +180,7 @@ func ExchangeDataList() []startData {
 			{"Coinjar_AUD_AAVE", "https://data.exchange.coinjar.com/products/AAVEAUD/ticker", "AUD", "AAVE"},
 			{"Coinjar_AUD_UNI", "https://data.exchange.coinjar.com/products/UNIAUD/ticker", "AUD", "UNI"},
 		}}}
+	// https://www.binance.com/en/markets/overview
+	// TODO add binance
+	// https://api.binance.com/api/v3/ticker/24hr?symbol=BTCEUR
 }

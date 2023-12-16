@@ -34,14 +34,7 @@ func main() {
 	cryptoExchangeChannel := make(chan CryptoExchanges.CryptoData)
 
 	for {
-		select {
-		case fiatRateMsg := <-fiatRatesChannel:
-			if fiatRateMsg.Err != nil {
-				log.Printf("Fiat exchange error: %v \n", fiatRateMsg.Err)
-			} else {
-				fiatMsg = fiatRateMsg
-			}
-		}
+		go updateFiatRates(fiatRatesChannel, fiatMsg)
 
 		for _, elem := range exchangeDataList {
 			exchangeMutex(elem, cryptoExchangeChannel)
@@ -101,4 +94,17 @@ func main() {
 		// biggest limit seen is 1 call per second
 		time.Sleep(time.Second * 25)
 	}
+}
+
+func updateFiatRates(fiatRatesChannel chan fiatCurrencyExchange.ExchangeRates, fiatMsg fiatCurrencyExchange.ExchangeRates) {
+	func() {
+		select {
+		case fiatRateMsg := <-fiatRatesChannel:
+			if fiatRateMsg.Err != nil {
+				log.Printf("Fiat exchange error: %v \n", fiatRateMsg.Err)
+			} else {
+				fiatMsg = fiatRateMsg
+			}
+		}
+	}()
 }

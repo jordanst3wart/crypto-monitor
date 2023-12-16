@@ -5,10 +5,6 @@ docker run --log-opt mode=non-blocking --log-opt max-buffer-size=4m $container
 ```
 
 # Setup
-Install go version 18, or latest. 
-See here:
-https://golang.org/doc/install
-
 See Makefile
 
 Did stuff through this:
@@ -30,14 +26,6 @@ t3.nano using docker containers
 
 
 https://github.com/golang-standards/project-layout
-
-Latest errors (these are hopefully fixed as of 14th of Dec):
-```
-2023/12/07 19:08:17 Name: CoinCorner_BTC Error json: cannot unmarshal number into Go struct field CoinfloorTickerAndBitstamp.volume of type string Coin {      }
-2023/12/07 19:08:17 Name: CoinCorner_ETH Error json: cannot unmarshal number into Go struct field CoinfloorTickerAndBitstamp.volume of type string Coin {      }
-2023/12/07 19:08:17 ARBITRAGE!!! on bid: IndependentReserve_BCH, ask:BTCMarket_AUD_BCH at +Inf
-2023/12/07 19:08:17 ARBITRAGE!!! on bid: Bitstamp_BCH, ask:BTCMarket_AUD_BCH at +Inf
-```
 
 
 docker image a tar file
@@ -72,7 +60,7 @@ nohup /home/ec2-user/crypto-monitor/bin/main >> /home/ec2-user/crypto-monitor/bi
 
 Check for arbitrage with:
 ```sh
-cat /home/ec2-user/crypto-monitor/bin/main.log | grep ARBITRAGE | grep -v Inf
+cat /home/ec2-user/crypto-monitor/bin/crypto.log | grep ARBITRAGE | grep -v Inf
 ```
 
 Use Renovate bot: https://github.com/renovatebot/renovate

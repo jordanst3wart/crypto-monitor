@@ -21,6 +21,7 @@ func TestIntCryptoExchanger(t *testing.T) {
 		if cryptoData.Error != nil {
 			t.Errorf("Didn't expect an error but got one: %v", cryptoData.Error)
 		}
+		t.Logf("Testing request to %s", cryptoData.Name)
 
 		bid, _ := cryptoData.Coin.BidFloat()
 		ask, _ := cryptoData.Coin.AskFloat()

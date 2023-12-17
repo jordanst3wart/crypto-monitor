@@ -79,7 +79,9 @@ func main() {
 			for _, itemOuter := range cryptoList {
 				for _, itemInner := range cryptoList {
 					arb := CheckArbitrage(itemInner, itemOuter)
-					arbitrageList = append(arbitrageList, ArbitrageData{fmt.Sprintf("buy: %s, sell: %s", itemOuter.Name, itemInner.Name), itemOuter.Crypto, arb})
+					bid, _ := itemInner.Coin.BidFloat()
+					ask, _ := itemOuter.Coin.AskFloat()
+					arbitrageList = append(arbitrageList, ArbitrageData{fmt.Sprintf("buy: %s at %v, sell: %s at %v", itemOuter.Name, ask, itemInner.Name, bid), itemOuter.Crypto, arb})
 				}
 			}
 		}

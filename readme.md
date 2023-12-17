@@ -76,9 +76,18 @@ ps -ef | grep /home/ec2-user/crypto-monitor/bin/main
 ```
 
 
+# TODO make automated deploy and test
 Build deploy:
 ```sh
 # need to stop it on server with ps -ef | grep main
 env GOOS=linux go build -ldflags="-s -w" -o bin/main main/functions.go main/main.go
 scp -i ~/.ssh/python-watch-key.pem -r bin ec2-user@13.239.8.107:/home/ec2-user/crypto-monitor
 ```
+
+
+TODO
+- add amount ot arbitrage message
+- add more crypto currencies to coinjar exchange
+- add an automated deployment
+- add automated tests
+

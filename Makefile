@@ -1,15 +1,13 @@
 .PHONY: build clean deploy scratch
 
 build:
-	# env GOOS=linux go build -ldflags="-s -w" -o bin/hello hello/main.go
-	# env GOOS=linux go build -ldflags="-s -w" -o bin/world world/main.go
-	env GOOS=linux go build -ldflags="-s -w" -o bin/main main/functions.go main/main.go
+	env GOOS=linux /Users/jordanstewart/go/go1.21.5/bin/go build -ldflags="-s -w" -o bin/main main/functions.go main/main.go
 
 clean:
 	rm -rf ./bin
 
 deploy: clean build
-	deploy.sh
+	scripts/deploy.sh
 
 trial:
 	go run main/functions.go main/main.go

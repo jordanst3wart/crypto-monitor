@@ -176,9 +176,18 @@ func ExchangeDataList() []startData {
 			{"Coinjar_AUD_LTC", "https://data.exchange.coinjar.com/products/LTCAUD/ticker", "AUD", "LTC"},
 			{"Coinjar_AUD_SOL", "https://data.exchange.coinjar.com/products/SOLAUD/ticker", "AUD", "SOL"},
 			{"Coinjar_AUD_INJ", "https://data.exchange.coinjar.com/products/INJAUD/ticker", "AUD", "INJ"},
-			// INJ is Injective
 			{"Coinjar_AUD_AAVE", "https://data.exchange.coinjar.com/products/AAVEAUD/ticker", "AUD", "AAVE"},
 			{"Coinjar_AUD_UNI", "https://data.exchange.coinjar.com/products/UNIAUD/ticker", "AUD", "UNI"},
+			{"Coinjar_AUD_LINK", "https://data.exchange.coinjar.com/products/LINKAUD/ticker", "AUD", "LINK"},
+			{"Coinjar_AUD_DOGE", "https://data.exchange.coinjar.com/products/DOGEAUD/ticker", "AUD", "DOGE"},
+			{"Coinjar_AUD_SHIB", "https://data.exchange.coinjar.com/products/SHIBAUD/ticker", "AUD", "SHIB"},
+			{"Coinjar_AUD_ADA", "https://data.exchange.coinjar.com/products/ADAAUD/ticker", "AUD", "ADA"},
+			{"Coinjar_AUD_ALGO", "https://data.exchange.coinjar.com/products/ALGOAUD/ticker", "AUD", "ALGO"},
+			{"Coinjar_AUD_MATIC", "https://data.exchange.coinjar.com/products/MATICAUD/ticker", "AUD", "MATIC"},
+			{"Coinjar_AUD_XLM", "https://data.exchange.coinjar.com/products/XLMAUD/ticker", "AUD", "XLM"},
+			{"Coinjar_AUD_OMG", "https://data.exchange.coinjar.com/products/OMGAUD/ticker", "AUD", "OMG"},
+			{"Coinjar_AUD_AAVE", "https://data.exchange.coinjar.com/products/AAVEAUD/ticker", "AUD", "AAVE"},
+			{"Coinjar_AUD_DOT", "https://data.exchange.coinjar.com/products/DOTAUD/ticker", "AUD", "DOT"},
 		}}}
 	// https://www.binance.com/en/markets/overview
 	// TODO add binance

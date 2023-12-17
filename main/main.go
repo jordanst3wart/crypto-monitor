@@ -10,11 +10,16 @@ import (
 	"time"
 )
 
+type ArbitrageData struct {
+	name, crypto string
+	arb          float64
+}
+
 // TODO Use orders to determine the volume of available & log amount of volume is available to buy/sell
 // TODO logrus to have better debug logic
 
 func main() {
-	minimumArbitrageRatio := 1.01
+	minimumArbitrageRatio := 1.017
 	exchangeDataList := ExchangeDataList()
 
 	// log setup
@@ -67,11 +72,6 @@ func main() {
 				}
 			}
 			mapCrypto[uniqueCryptos[i]] = listCrypto
-		}
-
-		type ArbitrageData struct {
-			name, crypto string
-			arb          float64
 		}
 
 		var arbitrageList []ArbitrageData

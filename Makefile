@@ -22,4 +22,4 @@ run-container:
 	docker run crypto-container
 
 test:
-	env GOOS=linux go test -ldflags="-s -w"
+	scripts/test-build.sh

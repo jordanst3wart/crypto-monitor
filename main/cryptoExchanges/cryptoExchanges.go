@@ -27,6 +27,7 @@ func requestWrapper(url string) ([]byte, error) {
 	if err != nil {
 		log.Printf("req failed for %s error is %v", url, err)
 	}
+	// TODO do a retry if a 500 code in x number of seconds, and maybe do exponential backoff maxing out at 5 minutes
 
 	req.Header.Add("Accept", "application/json")
 	resp, err := client.Do(req)

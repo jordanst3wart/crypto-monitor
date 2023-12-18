@@ -75,6 +75,7 @@ func FiatExchangeRatesRoutine(ch chan ExchangeRates, updateFrequency time.Durati
 		} else {
 			exchangeMap["USD2AUD"] = responseObject.Rates.AUD / responseObject.Rates.USD
 			exchangeMap["GBP2AUD"] = responseObject.Rates.AUD / responseObject.Rates.GBP
+			exchangeMap["EUR2AUD"] = responseObject.Rates.AUD / responseObject.Rates.EUR
 			ch <- ExchangeRates{exchangeMap, err}
 		}
 		time.Sleep(updateFrequency)

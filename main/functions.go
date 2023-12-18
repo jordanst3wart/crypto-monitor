@@ -33,12 +33,12 @@ func convertHelper(conversion float64, dto CryptoExchanges.CryptoData) CryptoExc
 	return CryptoExchanges.CryptoData{
 		Name: dto.Name,
 		Coin: CryptoExchanges.BTCMarket{
-			last * conversion,
-			high * conversion,
-			low * conversion,
-			volume * conversion,
-			bid * conversion,
-			ask * conversion},
+			Last:   last * conversion,
+			High:   high * conversion,
+			Low:    low * conversion,
+			Volume: volume * conversion,
+			Bid:    bid * conversion,
+			Ask:    ask * conversion},
 		Error:    dto.Error,
 		Currency: "AUD",
 		Crypto:   dto.Crypto,
@@ -57,6 +57,8 @@ func ConvertCurrency(crypto CryptoExchanges.CryptoData, exchangeRate fiatCurrenc
 		return convertHelper(exchangeRate.Rates["USD2AUD"], crypto)
 	case "GBP":
 		return convertHelper(exchangeRate.Rates["GBP2AUD"], crypto)
+	case "EUR":
+		return convertHelper(exchangeRate.Rates["EUR2AUD"], crypto)
 	case "AUD":
 		return crypto
 	default:
@@ -82,26 +84,26 @@ func DeduplicateStrings(input []string) []string {
 func exchangeMutex(data startData, ch chan CryptoExchanges.CryptoData) {
 	switch data.exchange {
 	case "Bitstamp":
-		var responseBitstamp CryptoExchanges.Bitstamp
-		requestToExchange(responseBitstamp, data.cryptoList, ch)
+		var response CryptoExchanges.Bitstamp
+		requestToExchange(response, data.cryptoList, ch)
 	case "IndependentReserve":
-		var responseIndependentReserve CryptoExchanges.IndependentReserve
-		requestToExchange(responseIndependentReserve, data.cryptoList, ch)
+		var response CryptoExchanges.IndependentReserve
+		requestToExchange(response, data.cryptoList, ch)
 	case "GeminiTickerBTC":
-		var responseGeminiBTC CryptoExchanges.GeminiTickerBTC
-		requestToExchange(responseGeminiBTC, data.cryptoList, ch)
+		var response CryptoExchanges.GeminiTickerBTC
+		requestToExchange(response, data.cryptoList, ch)
 	case "GeminiTickerETH":
-		var responseGeminiETH CryptoExchanges.GeminiTickerETH
-		requestToExchange(responseGeminiETH, data.cryptoList, ch)
+		var response CryptoExchanges.GeminiTickerETH
+		requestToExchange(response, data.cryptoList, ch)
 	case "BTCMarket":
-		var responseBTC CryptoExchanges.BTCMarket
-		requestToExchange(responseBTC, data.cryptoList, ch)
-	case "ACXTicker":
-		var responseACX CryptoExchanges.ACXTicker
-		requestToExchange(responseACX, data.cryptoList, ch)
+		var response CryptoExchanges.BTCMarket
+		requestToExchange(response, data.cryptoList, ch)
 	case "Coinjar":
-		var responseCoinjar CryptoExchanges.Coinjar
-		requestToExchange(responseCoinjar, data.cryptoList, ch)
+		var response CryptoExchanges.Coinjar
+		requestToExchange(response, data.cryptoList, ch)
+	case "Binance":
+		var response CryptoExchanges.Binance
+		requestToExchange(response, data.cryptoList, ch)
 	default:
 		log.Println("Invalid key in exchange list")
 	}
@@ -176,7 +178,6 @@ func ExchangeDataList() []startData {
 			{"Coinjar_AUD_LTC", "https://data.exchange.coinjar.com/products/LTCAUD/ticker", "AUD", "LTC"},
 			{"Coinjar_AUD_SOL", "https://data.exchange.coinjar.com/products/SOLAUD/ticker", "AUD", "SOL"},
 			{"Coinjar_AUD_INJ", "https://data.exchange.coinjar.com/products/INJAUD/ticker", "AUD", "INJ"},
-			{"Coinjar_AUD_AAVE", "https://data.exchange.coinjar.com/products/AAVEAUD/ticker", "AUD", "AAVE"},
 			{"Coinjar_AUD_UNI", "https://data.exchange.coinjar.com/products/UNIAUD/ticker", "AUD", "UNI"},
 			{"Coinjar_AUD_LINK", "https://data.exchange.coinjar.com/products/LINKAUD/ticker", "AUD", "LINK"},
 			{"Coinjar_AUD_DOGE", "https://data.exchange.coinjar.com/products/DOGEAUD/ticker", "AUD", "DOGE"},
@@ -188,8 +189,29 @@ func ExchangeDataList() []startData {
 			{"Coinjar_AUD_OMG", "https://data.exchange.coinjar.com/products/OMGAUD/ticker", "AUD", "OMG"},
 			{"Coinjar_AUD_AAVE", "https://data.exchange.coinjar.com/products/AAVEAUD/ticker", "AUD", "AAVE"},
 			{"Coinjar_AUD_DOT", "https://data.exchange.coinjar.com/products/DOTAUD/ticker", "AUD", "DOT"},
-		}}}
+		}},
+		startData{"Binance", []Four{
+			{"Binance_EUR_BTC", "https://api.binance.com/api/v3/ticker/24hr?symbol=BTCEUR", "EUR", "BTC"},
+			{"Binance_EUR_ETH", "https://api.binance.com/api/v3/ticker/24hr?symbol=ETHEUR", "EUR", "ETH"},
+			{"Binance_EUR_XRP", "https://api.binance.com/api/v3/ticker/24hr?symbol=XRPEUR", "EUR", "XRP"},
+			{"Binance_EUR_LTC", "https://api.binance.com/api/v3/ticker/24hr?symbol=LTCEUR", "EUR", "LTC"},
+			{"Binance_EUR_SOL", "https://api.binance.com/api/v3/ticker/24hr?symbol=SOLEUR", "EUR", "SOL"},
+			// USDT {"Binance_EUR_INJ", "https://api.binance.com/api/v3/ticker/24hr?symbol=INJEUR", "EUR", "INJ"},
+			// {"Binance_EUR_AAVE", "https://api.binance.com/api/v3/ticker/24hr?symbol=AAVEEUR", "EUR", "AAVE"},
+			//maybe USDT {"Binance_EUR_UNI", "https://api.binance.com/api/v3/ticker/24hr?symbol=UNIEUR", "EUR", "UNI"},
+			{"Binance_EUR_LINK", "https://api.binance.com/api/v3/ticker/24hr?symbol=LINKEUR", "EUR", "LINK"},
+			{"Binance_EUR_DOGE", "https://api.binance.com/api/v3/ticker/24hr?symbol=DOGEEUR", "EUR", "DOGE"},
+			{"Binance_EUR_SHIB", "https://api.binance.com/api/v3/ticker/24hr?symbol=SHIBEUR", "EUR", "SHIB"},
+			{"Binance_EUR_ADA", "https://api.binance.com/api/v3/ticker/24hr?symbol=ADAEUR", "EUR", "ADA"},
+			// USDT {"Binance_EUR_ALGO", "https://api.binance.com/api/v3/ticker/24hr?symbol=ALGOEUR", "EUR", "ALGO"},
+			{"Binance_EUR_MATIC", "https://api.binance.com/api/v3/ticker/24hr?symbol=MATICEUR", "EUR", "MATIC"},
+			{"Binance_EUR_XLM", "https://api.binance.com/api/v3/ticker/24hr?symbol=XLMEUR", "EUR", "XLM"},
+			// maybe USDT {"Binance_EUR_OMG", "https://api.binance.com/api/v3/ticker/24hr?symbol=OMGEUR", "EUR", "OMG"},
+			{"Binance_EUR_DOT", "https://api.binance.com/api/v3/ticker/24hr?symbol=DOTEUR", "EUR", "DOT"},
+		}},
+	}
 	// https://www.binance.com/en/markets/overview
 	// TODO add binance
+	// https://api.binance.com/api/v3/ticker/24hr?symbol=BTCEUR
 	// https://api.binance.com/api/v3/ticker/24hr?symbol=BTCEUR
 }

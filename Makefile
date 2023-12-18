@@ -23,3 +23,7 @@ run-container:
 
 test:
 	scripts/test-build.sh
+
+check-logs:
+	scripts/check-logs.sh
+

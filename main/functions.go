@@ -210,8 +210,4 @@ func ExchangeDataList() []startData {
 			{"Binance_EUR_DOT", "https://api.binance.com/api/v3/ticker/24hr?symbol=DOTEUR", "EUR", "DOT"},
 		}},
 	}
-	// https://www.binance.com/en/markets/overview
-	// TODO add binance
-	// https://api.binance.com/api/v3/ticker/24hr?symbol=BTCEUR
-	// https://api.binance.com/api/v3/ticker/24hr?symbol=BTCEUR
 }

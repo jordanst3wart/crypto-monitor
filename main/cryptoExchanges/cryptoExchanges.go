@@ -3,7 +3,6 @@ package CryptoExchanges
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 )
@@ -16,36 +15,55 @@ type CryptoData struct {
 	Crypto   string
 }
 
-func requestWrapper(url string) ([]byte, error) {
-	var responseData []byte
+func processResponse(resp *http.Response) ([]byte, error) {
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("non-OK HTTP status received: %d", resp.StatusCode)
+	}
+	return io.ReadAll(resp.Body)
+}
 
+func exponentialBackoffRequest(url string) ([]byte, error) {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
-
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Printf("req failed for %s error is %v", url, err)
+		return nil, fmt.Errorf("request creation failed: %w", err)
 	}
-	// TODO do a retry if a 500 code in x number of seconds, and maybe do exponential backoff maxing out at 5 minutes
-
 	req.Header.Add("Accept", "application/json")
-	resp, err := client.Do(req)
-	if err != nil {
-		return responseData, fmt.Errorf("get request failed for URL: %s, error: %w ", url, err)
-	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return responseData, fmt.Errorf("non-OK HTTP status received for URL %s: %d", url, resp.StatusCode)
-	}
+	retryCount := 0
+	maxRetries := 3
+	backoff := 1 * time.Second
+	maxBackoff := 1 * time.Minute
 
-	responseData, err = io.ReadAll(resp.Body)
-	if err != nil {
-		return responseData, fmt.Errorf("error reading response data for URL: %s, error: %d", url, err)
-	}
+	for {
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, fmt.Errorf("request failed: %w", err)
+		}
 
-	return responseData, nil
+		responseData, err := processResponse(resp)
+		if err == nil {
+			return responseData, nil
+		}
+
+		if resp.StatusCode >= 500 && resp.StatusCode <= 599 && retryCount < maxRetries {
+			time.Sleep(backoff)
+			backoff *= 2
+			if backoff > maxBackoff {
+				backoff = maxBackoff
+			}
+			retryCount++
+		} else {
+			return nil, err
+		}
+	}
+}
+
+func requestWrapper(url string) ([]byte, error) {
+	return exponentialBackoffRequest(url)
 }
 
 type CryptoExchange interface {

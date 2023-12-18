@@ -91,3 +91,7 @@ TODO
 - add an automated deployment
 - add automated tests
 
+Check logs
+```shell
+ssh -i ~/.ssh/python-watch-key.pem ec2-user@13.239.8.107 tail -n 150 /home/ec2-user/crypto-monitor/bin/stdout.log
+```

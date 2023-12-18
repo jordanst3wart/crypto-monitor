@@ -94,7 +94,7 @@ func main() {
 		}
 
 		// biggest limit seen is 1 call per second
-		time.Sleep(time.Second * 25)
+		time.Sleep(time.Second * 60)
 	}
 }
 

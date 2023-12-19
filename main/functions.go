@@ -4,6 +4,7 @@ import (
 	"crypto-monitor/main/cryptoExchanges"
 	"crypto-monitor/main/fiatCurrencyExchange"
 	"log"
+	"math"
 )
 
 type Four struct {
@@ -45,9 +46,18 @@ func convertHelper(conversion float64, dto CryptoExchanges.CryptoData) CryptoExc
 	}
 }
 
+func isZero(f float64) bool {
+	epsilon := 1e-10
+	return math.Abs(f) < epsilon
+}
+
 func CheckArbitrage(exchange1 CryptoExchanges.CryptoData, exchange2 CryptoExchanges.CryptoData) float64 {
 	bid, _ := exchange1.Coin.BidFloat()
 	ask, _ := exchange2.Coin.AskFloat()
+	if isZero(ask) {
+		log.Printf("Exchange %s ask value was %v changing value to 1.0", exchange2.Name, ask)
+		return 1.0
+	}
 	return bid / ask
 }
 
